@@ -40,7 +40,7 @@ export function LegalPage({
           <p className="text-sm text-muted-foreground">Última atualização: {updatedAt}</p>
         </div>
 
-        <Card className="bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(239,246,255,0.92))] shadow-[0_18px_60px_rgba(37,99,235,0.08)]">
+        <Card className="bg-[#f5eeea] shadow-sm">
           <CardHeader>
             <CardTitle>{highlightTitle}</CardTitle>
           </CardHeader>
@@ -52,7 +52,7 @@ export function LegalPage({
 
       <section className="space-y-6">
         {sections.map((section) => (
-          <Card key={section.title} className="bg-white/90 shadow-[0_14px_40px_rgba(37,99,235,0.05)]">
+          <Card key={section.title} className="bg-white shadow-sm">
             <CardHeader>
               <CardTitle>{section.title}</CardTitle>
             </CardHeader>

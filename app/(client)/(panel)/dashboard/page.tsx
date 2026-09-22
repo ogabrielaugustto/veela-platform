@@ -139,7 +139,7 @@ function buildActivityFeed(params: {
     id: `incident-${incident.key}`,
     title:
       incident.incidentStatus === "unauthorized"
-        ? "Caso aberto para acompanhamento DNL"
+        ? "Caso aberto para acompanhamento Veela"
         : formatDetectionStatus(incident.incidentStatus),
     description: `${formatDomain(incident.domain)} / ${incident.asset.title}`,
     occurredAt: incident.latestSeenAt,
@@ -324,7 +324,7 @@ export default async function DashboardPage() {
             tone: "emerald" as const,
           },
           {
-            label: "Casos DNL",
+            label: "Casos Veela",
             value: cases.length,
             description: "Usos nao autorizados em acompanhamento",
             icon: BriefcaseIcon,

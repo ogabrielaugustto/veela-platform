@@ -30,13 +30,13 @@ export const homeHero: LandingHero = {
   headline:
     "Monitore onde suas imagens aparecem antes que o uso não autorizado vire prejuízo.",
   description:
-    "Direito na Lente ajuda fotógrafos, agências, estúdios e marcas a subir seus ativos visuais, encontrar ocorrências na web e revisar cada sinal com contexto, evidências e apoio da DNL.",
+    "A Veela ajuda fotógrafos, agências, estúdios e marcas a monitorar seus ativos visuais, revisar possíveis usos na web com contexto e contar com apoio humano quando necessário.",
   primaryCta: {
     label: "Começar teste grátis",
     href: "/auth/register",
   },
   secondaryCta: {
-    label: "Falar com a DNL",
+    label: "Falar com a Veela",
     href: "/contato",
   },
 };
@@ -61,7 +61,7 @@ export const homeProblemPoints: LandingContentItem[] = [
   {
     title: "Ação jurídica começa depois da validação",
     description:
-      "Uma ocorrência não é automaticamente uma infração. Primeiro você revisa o uso, depois a DNL apoia o encaminhamento quando houver uso não autorizado.",
+      "Uma ocorrência não é automaticamente uma infração. Primeiro você revisa o uso, depois a Veela apoia o encaminhamento quando houver uso não autorizado.",
   },
 ];
 
@@ -86,9 +86,9 @@ export const homeWorkflowSteps: LandingWorkflowStep[] = [
   },
   {
     label: "04",
-    title: "Acione a DNL quando fizer sentido",
+    title: "Acione a Veela quando fizer sentido",
     description:
-      "Ao marcar uso não autorizado, o fluxo vira um caso para acompanhamento interno da equipe DNL.",
+      "Ao marcar uso não autorizado, o fluxo vira um caso para acompanhamento da equipe Veela.",
   },
 ];
 
@@ -138,7 +138,7 @@ export const homeBenefitCards: LandingContentItem[] = [
   {
     title: "Handoff para a equipe certa",
     description:
-      "Quando existe uso não autorizado, a DNL continua o acompanhamento no fluxo administrativo.",
+      "Quando existe uso não autorizado, a equipe Veela continua o acompanhamento no fluxo administrativo.",
   },
 ];
 
@@ -158,7 +158,7 @@ export const homeTrustItems: LandingContentItem[] = [
   {
     title: "Acesso autenticado",
     description:
-      "O monitoramento acontece em conta protegida, com separação entre painel do cliente e operação interna da DNL.",
+      "O monitoramento acontece em conta protegida, com separação entre painel do cliente e operação interna da Veela.",
   },
   {
     title: "Leitura responsável",
@@ -179,14 +179,14 @@ export const homeFaqItems: LandingFaqItem[] = [
       "Não. A plataforma apresenta ocorrências para revisão. A decisão sobre autorização, ignorar ou marcar como uso não autorizado depende da validação humana.",
   },
   {
-    question: "Quando a DNL entra no processo?",
+    question: "Quando a Veela entra no processo?",
     answer:
-      "A DNL entra com mais força quando uma ocorrência é marcada como uso não autorizado. Esse encaminhamento transforma a revisão em caso para acompanhamento interno.",
+      "A Veela entra com mais força quando uma ocorrência é marcada como uso não autorizado. Esse encaminhamento transforma a revisão em caso para acompanhamento interno.",
   },
   {
     question: "Preciso falar com vendas para começar?",
     answer:
-      "Não necessariamente. O caminho principal é cadastro direto com teste grátis. Se sua operação tiver volume, contexto jurídico sensível ou necessidade comercial específica, você pode falar com a DNL.",
+      "Não necessariamente. O caminho principal é cadastro direto com teste grátis. Se sua operação tiver volume, contexto jurídico sensível ou necessidade comercial específica, você pode falar com a Veela.",
   },
   {
     question: "Os planos e valores são reais?",

@@ -35,7 +35,7 @@ import {
 export const metadata: Metadata = {
   title: "Monitoramento de imagens com revisão humana",
   description:
-    "Monitore onde suas imagens aparecem, revise ocorrências com contexto e acione a DNL quando houver uso não autorizado.",
+    "Monitore onde suas imagens aparecem, revise possíveis usos com contexto e conte com apoio humano para proteger suas criações.",
 };
 
 export const dynamic = "force-dynamic";
@@ -54,8 +54,8 @@ export default async function LandingPage() {
 
   return (
     <div className="overflow-hidden">
-      <section className="relative border-b bg-[linear-gradient(180deg,#f5f8ff_0%,#ffffff_72%)]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(37,99,235,0.18),transparent_30%),radial-gradient(circle_at_82%_12%,rgba(14,165,233,0.10),transparent_26%)]" />
+      <section className="relative border-b bg-[linear-gradient(180deg,#f5eeea_0%,#ffffff_72%)]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(205,217,230,0.55),transparent_30%),radial-gradient(circle_at_82%_12%,rgba(86,124,141,0.10),transparent_26%)]" />
         <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)] lg:items-center lg:px-8 lg:py-20">
           <div className="space-y-8">
             <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-primary/15 bg-white/80 px-3 py-2 text-sm font-medium text-primary shadow-sm shadow-primary/5">
@@ -146,11 +146,11 @@ export default async function LandingPage() {
 
       <section
         id="como-funciona"
-        className="border-y bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)] text-white"
+        className="border-y bg-[#2e4156] text-white"
       >
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.86fr_1.14fr] lg:px-8 lg:py-20">
           <div className="space-y-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#cdd9e6]">
               Como funciona
             </p>
             <h2 className="font-heading text-3xl font-semibold tracking-tight lg:text-5xl">
@@ -158,7 +158,7 @@ export default async function LandingPage() {
             </h2>
             <p className="max-w-xl text-sm leading-7 text-white/70 sm:text-base">
               O fluxo separa monitoramento, revisão e encaminhamento. O cliente
-              entende o que foi encontrado, valida o uso e aciona a DNL quando
+              entende o que foi encontrado, valida o uso e aciona a Veela quando
               existe uso não autorizado.
             </p>
           </div>
@@ -210,7 +210,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-[#f6f9ff]">
+      <section className="bg-[#f5eeea]">
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-20">
           <div className="space-y-5">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
@@ -281,14 +281,14 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section id="planos" className="border-y bg-[#0f172a] text-white">
+      <section id="planos" className="border-y bg-[#2e4156] text-white">
         <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
           <div className="max-w-3xl space-y-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-300">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#cdd9e6]">
               Planos
             </p>
             <h2 className="font-heading text-3xl font-semibold tracking-tight lg:text-5xl">
-              Comece pelo teste grátis. Fale com a DNL se sua operação exigir mais contexto.
+              Comece pelo teste grátis. Fale com a Veela se sua operação exigir mais contexto.
             </h2>
             <p className="text-sm leading-7 text-white/70 sm:text-base">
               Os planos abaixo vêm do cadastro real do sistema. Você pode começar
@@ -348,7 +348,7 @@ export default async function LandingPage() {
                     size="lg"
                     variant="outline"
                   >
-                    <Link href="/contato">Falar com a DNL</Link>
+                    <Link href="/contato">Falar com a Veela</Link>
                   </Button>
                 )}
               </div>
@@ -369,7 +369,7 @@ export default async function LandingPage() {
             Confiança aqui vem de processo claro, não de selo inventado.
           </h2>
           <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-            A DNL comunica apenas o que sustenta na operação: privacidade
+            A Veela comunica apenas o que sustenta na operação: privacidade
             acessível, acesso autenticado, separação de papéis e revisão humana
             antes de tratar uma ocorrência como caso.
           </p>
@@ -397,7 +397,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      <section id="faq" className="bg-[#f6f9ff]">
+      <section id="faq" className="bg-[#f5eeea]">
         <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.74fr_1fr] lg:px-8 lg:py-20">
           <div className="space-y-5">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
@@ -428,13 +428,13 @@ export default async function LandingPage() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-8 rounded-md border bg-[linear-gradient(135deg,#eff6ff_0%,#ffffff_54%,#f8fbff_100%)] p-6 shadow-sm shadow-primary/10 lg:grid-cols-[1fr_auto] lg:items-center lg:p-8">
+        <div className="grid gap-8 rounded-md border bg-[#cdd9e6] p-6 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center lg:p-8">
           <div className="space-y-3">
             <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
               Comece a monitorar suas imagens com mais clareza.
             </h2>
             <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-              Crie sua conta, cadastre seus ativos e veja como a DNL organiza o
+              Crie sua conta, cadastre seus ativos e veja como a Veela organiza o
               caminho entre ocorrência encontrada, revisão humana e encaminhamento.
             </p>
           </div>
@@ -451,7 +451,7 @@ export default async function LandingPage() {
               size="lg"
               variant="outline"
             >
-              <Link href="/contato">Falar com a DNL</Link>
+              <Link href="/contato">Falar com a Veela</Link>
             </Button>
           </div>
         </div>
@@ -496,7 +496,7 @@ function ProductMockup() {
           <div className="rounded-md border border-white/10 bg-white/[0.04]">
             <div className="grid grid-cols-[1fr_auto] gap-4 border-b border-white/10 px-4 py-3">
               <p className="text-sm font-medium text-white">Ocorrências recentes</p>
-              <span className="rounded-md bg-sky-400/10 px-2 py-1 text-xs text-sky-200">
+          <span className="rounded-md bg-[#567c8d]/35 px-2 py-1 text-xs text-[#cdd9e6]">
                 Revisão ativa
               </span>
             </div>
@@ -531,7 +531,7 @@ function ProductMockup() {
 function ProductDetailPanel() {
   return (
     <div className="overflow-hidden rounded-md border bg-white shadow-sm shadow-primary/10">
-      <div className="border-b bg-[#f8fbff] px-5 py-4">
+      <div className="border-b bg-[#f5eeea] px-5 py-4">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="font-heading text-lg font-semibold">Revisão de ocorrência</p>
@@ -547,7 +547,7 @@ function ProductDetailPanel() {
 
       <div className="grid gap-0 md:grid-cols-[0.92fr_1.08fr]">
         <div className="border-b bg-slate-950 p-5 text-white md:border-b-0 md:border-r">
-          <div className="aspect-[4/3] rounded-md border border-white/10 bg-[linear-gradient(135deg,rgba(37,99,235,0.55),rgba(15,23,42,0.85)),radial-gradient(circle_at_70%_22%,rgba(255,255,255,0.22),transparent_24%)] p-4">
+          <div className="aspect-[4/3] rounded-md border border-white/10 bg-[linear-gradient(135deg,rgba(86,124,141,0.72),rgba(46,65,86,0.95)),radial-gradient(circle_at_70%_22%,rgba(255,255,255,0.22),transparent_24%)] p-4">
             <div className="flex h-full flex-col justify-between">
               <div className="flex justify-between gap-3">
                 <span className="rounded-md bg-white/12 px-2.5 py-1 text-xs">
@@ -575,7 +575,7 @@ function ProductDetailPanel() {
             <MiniMetric label="Próximo passo" value="Validar autorização" />
           </div>
 
-          <div className="rounded-md border bg-[#f8fbff] p-4">
+          <div className="rounded-md border bg-[#f5eeea] p-4">
             <div className="flex items-start gap-3">
               <SearchCheckIcon className="mt-0.5 size-5 shrink-0 text-primary" />
               <div>

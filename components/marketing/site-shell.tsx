@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { ScaleIcon } from "lucide-react";
-import { APP_NAME } from "@/lib/brand";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import { MarketingMobileNav } from "@/components/marketing/mobile-nav";
 
@@ -19,18 +18,12 @@ export function MarketingSiteShell({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f5f8ff_0%,#ffffff_28%,#f8fbff_62%,#ffffff_100%)] text-foreground">
-      <div className="pointer-events-none fixed inset-x-0 top-0 -z-10 h-[32rem] bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.20),transparent_40%),radial-gradient(circle_at_top_right,rgba(59,130,246,0.12),transparent_32%)]" />
+    <div className="min-h-screen bg-background text-foreground">
 
-      <header className="sticky top-0 z-30 border-b bg-white/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur-xl">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <Link className="flex min-w-0 items-center gap-3" href="/">
-            <span className="flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-              <ScaleIcon className="size-5" />
-            </span>
-            <span className="truncate font-heading text-base font-semibold tracking-tight sm:text-lg">
-              {APP_NAME}
-            </span>
+            <BrandLogo priority className="h-auto w-32 sm:w-36" />
           </Link>
 
           <nav className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
@@ -62,10 +55,10 @@ export function MarketingSiteShell({
 
       <main className="flex-1">{children}</main>
 
-      <footer className="border-t bg-white/80">
+      <footer className="border-t bg-muted/50">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-10 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
           <div className="max-w-xl space-y-3">
-            <p className="font-heading text-xl font-semibold">{APP_NAME}</p>
+            <BrandLogo className="h-auto w-36" />
             <p className="text-sm leading-6 text-muted-foreground">
               Monitoramento de imagens com foco em triagem, evidências operacionais
               e validação humana antes de qualquer ação.

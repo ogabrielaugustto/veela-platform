@@ -262,11 +262,11 @@ function ClientCasePreviewSheet({
                   <p className="font-medium text-foreground">
                     {row.latestAction
                       ? formatActionLabel(row.latestAction.action)
-                      : "Aguardando novo andamento da equipe DNL"}
+                      : "Aguardando novo andamento da equipe Veela"}
                   </p>
                   <p className="text-muted-foreground">
                     {row.latestAction
-                      ? `${row.latestAction.actorName ?? row.latestAction.actorEmail ?? "Equipe DNL"} em ${formatDate(row.latestAction.createdAt)}`
+                      ? `${row.latestAction.actorName ?? row.latestAction.actorEmail ?? "Equipe Veela"} em ${formatDate(row.latestAction.createdAt)}`
                       : "O caso foi aberto e ainda nao recebeu atualizacoes adicionais."}
                   </p>
                   {row.latestAction?.notes ? (
@@ -519,7 +519,7 @@ export function ClientCasesTable({ rows }: ClientCasesTableProps) {
                         </p>
                         <p className="mt-1 truncate text-muted-foreground">
                           {row.latestAction
-                            ? `${row.latestAction.actorName ?? row.latestAction.actorEmail ?? "Equipe DNL"} • ${formatDate(row.latestAction.createdAt)}`
+                            ? `${row.latestAction.actorName ?? row.latestAction.actorEmail ?? "Equipe Veela"} • ${formatDate(row.latestAction.createdAt)}`
                             : "Sem novo andamento registrado"}
                         </p>
                       </div>

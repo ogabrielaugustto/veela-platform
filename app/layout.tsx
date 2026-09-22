@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Outfit, Figtree } from "next/font/google";
 import "./globals.css";
-import { APP_DESCRIPTION, APP_NAME } from "@/lib/brand";
+import { APP_DESCRIPTION, APP_KEYWORDS, APP_NAME } from "@/lib/brand";
 import { CookieConsentBanner } from "@/components/legal/cookie-consent-banner";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -27,15 +27,29 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,
+  keywords: APP_KEYWORDS,
   title: {
     default: APP_NAME,
     template: `%s | ${APP_NAME}`,
   },
   description: APP_DESCRIPTION,
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: APP_NAME,
     description: APP_DESCRIPTION,
     siteName: APP_NAME,
+    locale: "pt_BR",
+    type: "website",
+    images: [{ url: "/logo-color.png", alt: "Veela" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: APP_NAME,
+    description: APP_DESCRIPTION,
+    images: ["/logo-color.png"],
   },
 };
 

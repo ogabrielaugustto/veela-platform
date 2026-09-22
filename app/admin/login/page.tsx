@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import { redirectAuthenticatedUser } from "@/lib/auth";
 import { AuthShell } from "@/components/auth-shell";
 import { LoginForm } from "@/components/login-form";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export default async function AdminLoginPage() {
   await redirectAuthenticatedUser("admin");

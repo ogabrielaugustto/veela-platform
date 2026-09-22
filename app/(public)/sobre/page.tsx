@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const metadata: Metadata = {
   title: "Sobre",
   description:
-    "Conheça a proposta da Direito na Lente para monitoramento de imagens com validação humana e evidências operacionais.",
+    "Conheça a Veela: monitoramento de imagens, contexto operacional e revisão humana de possíveis usos não autorizados.",
 };
 
 const principles = [
@@ -50,11 +50,11 @@ export default function AboutPage() {
           <p className="max-w-2xl text-base leading-8 text-muted-foreground lg:text-lg">
             O foco não é apenas encontrar usos na internet. O foco é transformar
             esse monitoramento em um processo claro para o cliente revisar,
-            encaminhar e acompanhar junto da equipe da Direito na Lente.
+            encaminhar e acompanhar junto da equipe Veela.
           </p>
         </div>
 
-        <Card className="border-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.95),transparent_30%),linear-gradient(135deg,oklch(0.2_0.04_260),oklch(0.3_0.05_240))] text-white ring-0">
+        <Card className="border-0 bg-[#2e4156] text-white ring-0">
           <CardHeader>
             <CardTitle className="text-white">Fluxo central do produto</CardTitle>
           </CardHeader>
@@ -76,7 +76,7 @@ export default function AboutPage() {
           return (
             <Card
               key={item.title}
-              className="bg-white/85 shadow-[0_18px_60px_rgba(37,99,235,0.08)]"
+              className="bg-white shadow-sm"
             >
               <CardHeader className="space-y-4">
                 <span className="flex size-12 min-h-12 min-w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -92,7 +92,7 @@ export default function AboutPage() {
         })}
       </section>
 
-      <section className="grid gap-6 rounded-[2rem] bg-white/85 p-8 shadow-[0_24px_80px_rgba(37,99,235,0.08)] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-10">
+      <section className="grid gap-6 rounded-2xl bg-muted p-8 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:p-10">
         <div className="space-y-3">
           <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
             Estruture seu monitoramento em um único lugar.

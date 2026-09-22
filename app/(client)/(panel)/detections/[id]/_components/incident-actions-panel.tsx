@@ -102,7 +102,7 @@ const decisionOptions: DecisionOption[] = [
   {
     nextStatus: "unauthorized",
     label: "Uso não autorizado",
-    description: "Use quando este grupo deve virar um caso para acompanhamento da equipe DNL.",
+    description: "Use quando este grupo deve virar um caso para acompanhamento da equipe Veela.",
     tone: "destructive",
     icon: ShieldAlertIcon,
   },
@@ -144,7 +144,7 @@ function getDecisionSummary(currentStatus: string) {
       return {
         badgeVariant: "destructive" as const,
         title: "Marcado como uso não autorizado",
-        description: "Este grupo segue para a equipe DNL analisar o caso e definir os próximos passos.",
+    description: "Este grupo segue para a equipe Veela analisar o caso e definir os próximos passos.",
       };
     default:
       return null;
@@ -416,7 +416,7 @@ function UnauthorizedDecisionDialog(props: {
                 {props.selected ? <Badge variant="destructive">Selecionado</Badge> : null}
               </div>
               <p className="mt-1 text-sm opacity-80">
-                Use quando este grupo deve virar um caso para acompanhamento da equipe DNL.
+                Use quando este grupo deve virar um caso para acompanhamento da equipe Veela.
               </p>
             </div>
             {props.selected ? (
@@ -443,14 +443,14 @@ function UnauthorizedDecisionDialog(props: {
           <div className="border-b border-border px-5 py-5 sm:px-6">
             <AlertDialogHeader className="space-y-3 text-left">
               <div className="inline-flex w-fit items-center rounded-full bg-primary/8 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-primary">
-                Encaminhar para a DNL
+                Encaminhar para a Veela
               </div>
               <AlertDialogTitle className="text-left text-2xl leading-tight font-semibold">
                 Confirmar uso não autorizado desta imagem?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-left text-sm leading-6">
                 Revise a ocorrência, complete os dados do signatário e confirme o termo
-                para encaminhar à equipe DNL.
+                para encaminhar à equipe Veela.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="mt-5">
@@ -470,7 +470,7 @@ function UnauthorizedDecisionDialog(props: {
                   Revise a ocorrência
                 </h3>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                  Confirme que esta imagem e esta origem devem seguir para análise da DNL.
+                  Confirme que esta imagem e esta origem devem seguir para análise da Veela.
                 </p>
               </div>
 
@@ -498,7 +498,7 @@ function UnauthorizedDecisionDialog(props: {
                 </div>
 
                 <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-                  Ao confirmar, a ocorrência vira um caso para acompanhamento da equipe DNL.
+                  Ao confirmar, a ocorrência vira um caso para acompanhamento da equipe Veela.
                 </div>
               </div>
             </section>

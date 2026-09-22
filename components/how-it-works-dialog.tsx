@@ -31,7 +31,7 @@ const steps = [
   },
   {
     icon: SearchCheckIcon,
-    title: "A DNL acompanha possíveis usos",
+    title: "A Veela acompanha possíveis usos",
     description:
       "Nossa plataforma busca ocorrências, organiza os registros encontrados e reúne sinais importantes para análise.",
   },
@@ -45,7 +45,7 @@ const steps = [
     icon: BriefcaseIcon,
     title: "Casos relevantes seguem para a equipe",
     description:
-      "Quando algo parece indevido, a ocorrência deixa de ser apenas um alerta e entra no fluxo de acompanhamento da DNL.",
+      "Quando algo parece indevido, a ocorrência deixa de ser apenas um alerta e entra no fluxo de acompanhamento da equipe Veela.",
   },
   {
     icon: FileTextIcon,
@@ -57,7 +57,7 @@ const steps = [
     icon: ScaleIcon,
     title: "Você conta com condução especializada",
     description:
-      "A partir daí, a DNL conduz o acompanhamento com atenção jurídica e operacional, mantendo você amparado durante a jornada.",
+      "A partir daí, a equipe Veela conduz o acompanhamento operacional e encaminha o caso quando necessário.",
   },
 ];
 
@@ -71,10 +71,10 @@ export function HowItWorksDialog({ trigger }: HowItWorksDialogProps) {
             <ScaleIcon className="size-5" />
           </div>
           <DialogTitle className="text-xl leading-tight">
-            Como funciona a DNL
+            Como funciona a Veela
           </DialogTitle>
           <DialogDescription className="max-w-xl text-pretty leading-6">
-            Da proteção das suas imagens ao acompanhamento dos casos, a DNL
+            Da proteção das suas imagens ao acompanhamento dos casos, a Veela
             combina tecnologia, curadoria humana e orientação especializada.
           </DialogDescription>
         </DialogHeader>

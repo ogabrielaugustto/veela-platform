@@ -1,4 +1,14 @@
-export const APP_NAME = "Direito na Lente";
+export const APP_NAME = "Veela";
 
 export const APP_DESCRIPTION =
-  "Direito na Lente: landing page, auth, client panel e admin panel em um unico app Next.js.";
+  "Monitore onde suas imagens aparecem, revise possíveis usos com contexto e conte com apoio humano para proteger suas criações.";
+
+export const APP_KEYWORDS = [
+  "monitoramento de imagens",
+  "proteção de direitos autorais",
+  "uso não autorizado de imagens",
+  "busca reversa de imagens",
+  "gestão de direitos autorais",
+  "fotógrafos",
+  "agências criativas",
+];

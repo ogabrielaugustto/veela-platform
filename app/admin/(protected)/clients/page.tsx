@@ -1,9 +1,15 @@
-import { listAdminClients } from "@/lib/dal/admin-clients";
+import {
+  listAdminClients,
+  listAdminGrantablePlans,
+} from "@/lib/dal/admin-clients";
 import { InviteUserDialog } from "../users/_components/invite-user-dialog";
 import { AdminClientsTable } from "./_components/admin-clients-table";
 
 export default async function AdminClientsPage() {
-  const clients = await listAdminClients();
+  const [clients, grantablePlans] = await Promise.all([
+    listAdminClients(),
+    listAdminGrantablePlans(),
+  ]);
 
   return (
     <section className="flex w-full flex-1 flex-col gap-5 px-4 py-6 md:px-8">
@@ -34,7 +40,7 @@ export default async function AdminClientsPage() {
         </div>
       </header>
 
-      <AdminClientsTable rows={clients} />
+      <AdminClientsTable grantablePlans={grantablePlans} rows={clients} />
     </section>
   );
 }

@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import {
   BriefcaseIcon,
   FolderKanbanIcon,
@@ -11,6 +12,10 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { requirePanelAccess } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 const clientNavigation = [
   { title: "Inicio", url: "/dashboard", icon: <GaugeIcon /> },

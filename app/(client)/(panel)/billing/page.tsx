@@ -49,7 +49,7 @@ const planHighlights: Record<ListedBillingPlanCode, string[]> = {
     "Mais contexto para revisão e priorização",
   ],
   custom: [
-    "Operação desenhada com a equipe DNL",
+    "Operação desenhada com a equipe Veela",
     "Condições comerciais personalizadas",
     "Disponível em breve",
   ],
@@ -145,7 +145,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
               key={plan.code}
               className={[
                 "flex h-full flex-col",
-                isPreferred ? "border-primary shadow-[0_18px_60px_rgba(37,99,235,0.12)]" : "",
+                isPreferred ? "border-primary shadow-[0_18px_60px_rgba(46,65,86,0.12)]" : "",
               ].join(" ")}
             >
               <CardHeader className="space-y-4">
@@ -191,7 +191,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
               <CardFooter>
                 {plan.isComingSoon ? (
                   <Button asChild className="w-full" variant="outline">
-                    <Link href="/contato">Falar com a DNL</Link>
+                    <Link href="/contato">Falar com a Veela</Link>
                   </Button>
                 ) : (
                   <form action={createBillingCheckoutAction} className="w-full">
@@ -224,7 +224,7 @@ function BillingNotice({
         "mt-6 rounded-xl border px-4 py-3 text-sm",
         tone === "warning"
           ? "border-amber-200 bg-amber-50 text-amber-950"
-          : "border-blue-200 bg-blue-50 text-blue-950",
+          : "border-secondary bg-muted text-primary",
       ].join(" ")}
     >
       {children}

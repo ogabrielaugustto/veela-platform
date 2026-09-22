@@ -45,7 +45,7 @@ export function SignatureRequiredDialog({
           action={action}
           className="grid min-w-0 gap-0 overflow-hidden lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]"
         >
-          <div className="min-w-0 bg-[radial-gradient(circle_at_top_left,#d9c17f,transparent_28%),linear-gradient(145deg,#0f172a_0%,#162338_48%,#0b1220_100%)] px-6 py-7 text-white sm:px-8 sm:py-8">
+          <div className="min-w-0 bg-[#2e4156] px-6 py-7 text-white sm:px-8 sm:py-8">
             <DialogHeader className="space-y-4">
               <div className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-white/78">
                 Assinatura pendente

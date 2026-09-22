@@ -2,9 +2,23 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { KeyRoundIcon, PowerIcon, SearchIcon } from "lucide-react";
+import { GiftIcon, KeyRoundIcon, PowerIcon, SearchIcon } from "lucide-react";
 import { toast } from "sonner";
-import { updateClientScanFrequencyAction } from "@/app/actions/admin-clients";
+import {
+  grantComplimentaryPlanAction,
+  updateClientScanFrequencyAction,
+} from "@/app/actions/admin-clients";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import {
   sendAdminUserPasswordResetAction,
   toggleAdminUserActiveAction,
@@ -26,7 +40,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { AdminClientListItem } from "@/lib/dal/admin-clients";
+import type {
+  AdminClientListItem,
+  AdminGrantablePlan,
+} from "@/lib/dal/admin-clients";
 import {
   formatMonitoringFrequency,
   monitoringFrequencyOptions,
@@ -38,6 +55,7 @@ import {
 } from "./admin-clients-table-helpers";
 
 type AdminClientsTableProps = {
+  grantablePlans: AdminGrantablePlan[];
   rows: AdminClientListItem[];
 };
 
@@ -221,21 +239,113 @@ function ClientFrequencyControl({
   );
 }
 
-function ClientActionsCell({ row }: { row: AdminClientTableRow }) {
-  if (!row.userId) {
-    return <span className="text-sm text-muted-foreground">Sem acesso</span>;
+function ClientComplimentaryPlanControl({
+  organizationId,
+  organizationName,
+  plans,
+}: {
+  organizationId: string;
+  organizationName: string;
+  plans: AdminGrantablePlan[];
+}) {
+  const router = useRouter();
+  const [planId, setPlanId] = useState(plans[0]?.id ?? "");
+  const [isPending, startTransition] = useTransition();
+
+  function grantPlan() {
+    const formData = new FormData();
+    formData.set("organizationId", organizationId);
+    formData.set("planId", planId);
+
+    startTransition(async () => {
+      const result = await grantComplimentaryPlanAction(formData);
+
+      if (result.status === "success") {
+        toast.success(`${organizationName}: ${result.message}`);
+        router.refresh();
+        return;
+      }
+
+      toast.error(result.message ?? "Nao foi possivel conceder o plano.");
+    });
+  }
+
+  if (plans.length === 0) {
+    return <p className="text-xs text-muted-foreground">Nenhum plano ativo.</p>;
   }
 
   return (
-    <ClientUserActionButtons
-      email={row.email}
-      isActive={row.userIsActive ?? false}
-      userId={row.userId}
-    />
+    <div className="flex min-w-[14rem] flex-col gap-2">
+      <Select disabled={isPending} onValueChange={setPlanId} value={planId}>
+        <SelectTrigger className="h-9 w-full">
+          <SelectValue placeholder="Selecione o plano" />
+        </SelectTrigger>
+        <SelectContent>
+          {plans.map((plan) => (
+            <SelectItem key={plan.id} value={plan.id}>
+              {plan.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button disabled={isPending || !planId} size="sm" variant="outline">
+            <GiftIcon className="size-4" />
+            Conceder gratuito
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conceder plano sem cobrança?</AlertDialogTitle>
+            <AlertDialogDescription>
+              O cliente receberá o plano selecionado como acesso manual. Se houver
+              uma assinatura Stripe ativa, a cobrança será encerrada antes da concessão.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isPending}>Voltar</AlertDialogCancel>
+            <AlertDialogAction disabled={isPending} onClick={grantPlan}>
+              {isPending ? "Concedendo..." : "Confirmar concessão"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   );
 }
 
-export function AdminClientsTable({ rows }: AdminClientsTableProps) {
+function ClientActionsCell({
+  grantablePlans,
+  row,
+}: {
+  grantablePlans: AdminGrantablePlan[];
+  row: AdminClientTableRow;
+}) {
+  return (
+    <div className="flex min-w-[14rem] flex-col gap-3">
+      {row.userId ? (
+        <ClientUserActionButtons
+          email={row.email}
+          isActive={row.userIsActive ?? false}
+          userId={row.userId}
+        />
+      ) : (
+        <span className="text-sm text-muted-foreground">Sem acesso de usuário</span>
+      )}
+      <ClientComplimentaryPlanControl
+        organizationId={row.organizationId}
+        organizationName={row.organizationName}
+        plans={grantablePlans}
+      />
+    </div>
+  );
+}
+
+export function AdminClientsTable({
+  grantablePlans,
+  rows,
+}: AdminClientsTableProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -437,7 +547,7 @@ export function AdminClientsTable({ rows }: AdminClientsTableProps) {
                   </div>
                 </TableCell>
                 <TableCell className="align-top">
-                  <ClientActionsCell row={row} />
+                  <ClientActionsCell grantablePlans={grantablePlans} row={row} />
                 </TableCell>
               </TableRow>
             ))

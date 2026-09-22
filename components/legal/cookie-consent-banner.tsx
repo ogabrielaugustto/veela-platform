@@ -50,7 +50,7 @@ export function CookieConsentBanner() {
 
   return (
     <div className="fixed inset-x-3 bottom-3 z-50 sm:inset-x-4 sm:bottom-4 md:left-auto md:right-4 md:max-w-md">
-      <div className="overflow-hidden rounded-3xl border bg-background/95 shadow-[0_24px_80px_rgba(37,99,235,0.18)] backdrop-blur">
+      <div className="overflow-hidden rounded-3xl border bg-background/95 shadow-xl backdrop-blur">
         <div className="flex items-start gap-3 p-4 sm:gap-4 sm:p-5">
           <span className="mt-0.5 flex size-10 min-h-10 min-w-10 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <ShieldCheckIcon className="size-5" />

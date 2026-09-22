@@ -42,6 +42,13 @@ type ProfileRow = {
   system_role: "user" | "admin" | "super_admin";
 };
 
+type ActiveSubscriptionPlanRow = {
+  id: string;
+  name: string;
+};
+
+export type AdminGrantablePlan = ActiveSubscriptionPlanRow;
+
 export type AdminClientAccessListItem = {
   userId: string;
   email: string | null;
@@ -174,4 +181,21 @@ export async function listAdminClients(): Promise<AdminClientListItem[]> {
       activeClientUsers: clientUsers.filter((user) => user.isActive).length,
     };
   });
+}
+
+export async function listAdminGrantablePlans(): Promise<AdminGrantablePlan[]> {
+  await requirePanelAccess("admin");
+  const admin = createAdminClient();
+  const { data, error } = await admin
+    .from("subscription_plans")
+    .select("id, name")
+    .eq("is_active", true)
+    .order("price_cents", { ascending: true })
+    .returns<ActiveSubscriptionPlanRow[]>();
+
+  if (error) {
+    throw new Error("Nao foi possivel carregar os planos para concessao manual.");
+  }
+
+  return data ?? [];
 }

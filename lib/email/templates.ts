@@ -63,7 +63,7 @@ function createEmailLayout({
   const actionMarkup =
     actionLabel && actionUrl
       ? `<p style="margin:32px 0 0;">
-          <a href="${escapeHtml(actionUrl)}" style="display:inline-block;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#eff6ff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:700;box-shadow:0 14px 28px rgba(37,99,235,0.28);">
+          <a href="${escapeHtml(actionUrl)}" style="display:inline-block;background:#2e4156;color:#ffffff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:700;">
             ${escapeHtml(actionLabel)}
           </a>
         </p>`
@@ -75,10 +75,10 @@ function createEmailLayout({
 
   return `<!doctype html>
 <html lang="pt-BR">
-  <body style="margin:0;background:#f4f7fb;font-family:Arial,sans-serif;color:#0f172a;">
+  <body style="margin:0;background:#f5eeea;font-family:Arial,sans-serif;color:#2e4156;">
     <div style="padding:32px 16px;">
-      <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:28px;overflow:hidden;border:1px solid rgba(37,99,235,0.1);box-shadow:0 24px 70px rgba(15,23,42,0.08);">
-        <div style="padding:28px;background:radial-gradient(circle at top left,rgba(147,197,253,0.9),transparent 30%),linear-gradient(135deg,#0f172a,#162338 55%,#1d4ed8 100%);color:#ffffff;">
+      <div style="max-width:620px;margin:0 auto;background:#ffffff;border-radius:20px;overflow:hidden;border:1px solid #cdd9e6;box-shadow:0 16px 48px rgba(46,65,86,0.08);">
+        <div style="padding:28px;background:#2e4156;color:#ffffff;">
           <p style="margin:0 0 10px;font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(239,246,255,0.72);">
             ${escapeHtml(eyebrow)}
           </p>
@@ -105,7 +105,7 @@ export function buildWelcomeEmail({
 }: WelcomeEmailParams): EmailContent {
   const safeName = escapeHtml(fullName);
   const contextMarkup = accessContext
-    ? `<div style="margin:18px 0 0;padding:16px 18px;border-radius:20px;background:#eff6ff;border:1px solid rgba(37,99,235,0.12);color:#1e3a8a;">
+    ? `<div style="margin:18px 0 0;padding:16px 18px;border-radius:16px;background:#cdd9e6;border:1px solid #aeb7bd;color:#2e4156;">
         ${escapeHtml(accessContext)}
       </div>`
     : "";
@@ -113,15 +113,15 @@ export function buildWelcomeEmail({
     ? "Sua conta ja esta pronta para comecar"
     : "Seu acesso ja pode ser usado na plataforma";
   const bodyLead = isFirstAccess
-    ? "Sua conta na Direito na Lente foi criada. A plataforma foi pensada para organizar ativos, acompanhar ocorrencias e apoiar a revisao humana com mais contexto operacional."
-    : "Seu acesso na Direito na Lente foi preparado para acompanhar ativos, varreduras e ocorrencias da sua organizacao em um unico fluxo.";
+    ? "Sua conta na Veela foi criada. A plataforma foi pensada para organizar ativos, acompanhar ocorrencias e apoiar a revisao humana com mais contexto operacional."
+    : "Seu acesso na Veela foi preparado para acompanhar ativos, varreduras e ocorrencias da sua organizacao em um unico fluxo.";
   const bodyFollowUp = isFirstAccess
     ? "Assim que voce entrar, ja pode cadastrar as primeiras imagens e iniciar a estrutura de monitoramento da sua organizacao."
     : "Assim que voce entrar, o painel ja estara pronto para continuar o acompanhamento do monitoramento e das revisoes pendentes.";
 
   return {
-    subject: "Sua conta na Direito na Lente foi criada",
-    text: `Ola, ${fullName}. Sua conta na Direito na Lente foi criada. ${bodyLead} ${accessContext ? `${accessContext} ` : ""}${actionLabel}: ${actionUrl}. Quando quiser acompanhar o painel, ele estara disponivel em ${dashboardUrl}.`,
+    subject: "Sua conta na Veela foi criada",
+    text: `Ola, ${fullName}. Sua conta na Veela foi criada. ${bodyLead} ${accessContext ? `${accessContext} ` : ""}${actionLabel}: ${actionUrl}. Quando quiser acompanhar o painel, ele estara disponivel em ${dashboardUrl}.`,
     html: createEmailLayout({
       eyebrow: "Boas-vindas",
       title,
@@ -147,14 +147,14 @@ export function buildPasswordRecoveryEmail({
   supportUrl,
 }: PasswordRecoveryEmailParams): EmailContent {
   return {
-    subject: "Recuperacao de senha da Direito na Lente",
+    subject: "Recuperacao de senha da Veela",
     text: `Recebemos um pedido para redefinir sua senha. Use este link para continuar: ${recoveryUrl}. Se voce nao solicitou a recuperacao, ignore esta mensagem. Ajuda: ${supportUrl}.`,
     html: createEmailLayout({
       eyebrow: "Recuperacao",
       title: "Redefina sua senha com seguranca",
       body: `
         <p style="margin:0;">
-          Recebemos um pedido para redefinir a senha da sua conta na Direito na Lente.
+          Recebemos um pedido para redefinir a senha da sua conta na Veela.
         </p>
         <p style="margin:16px 0 0;">
           Clique no botao abaixo para abrir a tela segura de redefinicao.
@@ -206,7 +206,7 @@ export function buildCaseCommunicationEmail({
   const escapedBody = escapeHtml(body);
   const validationMarkup =
     validationUrl && validationCode
-      ? `<div style="margin:18px 0 0;padding:14px 16px;border-radius:16px;background:#eff6ff;border:1px solid rgba(37,99,235,0.12);font-size:13px;line-height:1.7;color:#1e3a8a;">
+      ? `<div style="margin:18px 0 0;padding:14px 16px;border-radius:16px;background:#cdd9e6;border:1px solid #aeb7bd;font-size:13px;line-height:1.7;color:#2e4156;">
           <strong>Validação oficial:</strong> use o botão abaixo ou acesse a página Validar notificação no site da Direito na Lente.<br>
           <strong>ID do caso:</strong> ${escapeHtml(casePublicIdLabel)}<br>
           <strong>Chave de validação:</strong> ${escapeHtml(validationCode)}

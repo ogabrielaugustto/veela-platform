@@ -13,6 +13,7 @@ import { createClient } from "@/lib/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { type AppPanel, getAuthContext, getDefaultPanelPath } from "@/lib/auth";
 import {
+  fetchViaCepAddress,
   fetchBrasilApiCompany,
   parseRegistrationDocument,
   validateOnboardingAddress,
@@ -82,6 +83,16 @@ const completeOnboardingSchema = z.object({
     .max(60, "Use até 60 caracteres para a origem.")
     .optional()
     .transform((value) => value ?? ""),
+  referralOther: z
+    .string()
+    .trim()
+    .max(120, "Use até 120 caracteres para especificar a origem.")
+    .optional()
+    .transform((value) => value ?? ""),
+  addressStreet: z.string().trim().max(160).optional().transform((value) => value ?? ""),
+  addressNeighborhood: z.string().trim().max(120).optional().transform((value) => value ?? ""),
+  addressCity: z.string().trim().max(120).optional().transform((value) => value ?? ""),
+  addressState: z.string().trim().max(2).optional().transform((value) => value ?? ""),
 });
 
 const forgotPasswordSchema = z.object({
@@ -241,6 +252,10 @@ async function upsertCustomerOrganization(params: {
     postalCode: string;
     number: string;
     complement: string | null;
+    street: string | null;
+    neighborhood: string | null;
+    city: string | null;
+    state: string | null;
   };
   company: NonNullable<Awaited<ReturnType<typeof getPendingSignupOnboarding>>>["company"];
 }) {
@@ -254,12 +269,12 @@ async function upsertCustomerOrganization(params: {
     legal_name: params.company?.legalName ?? null,
     trade_name: params.company?.tradeName ?? null,
     postal_code: params.address.postalCode,
-    street: params.company?.street ?? null,
+    street: params.address.street,
     number: params.address.number,
     complement: params.address.complement,
-    neighborhood: params.company?.neighborhood ?? null,
-    city: params.company?.city ?? null,
-    state: params.company?.state ?? null,
+    neighborhood: params.address.neighborhood,
+    city: params.address.city,
+    state: params.address.state,
   };
 
   const { data: membership, error: membershipError } = await admin
@@ -475,7 +490,7 @@ export async function loginAction(
     await supabase.auth.signOut();
     return {
       status: "error",
-      message: "Esta conta esta desativada. Fale com um administrador da DNL.",
+      message: "Esta conta esta desativada. Fale com um administrador da Veela.",
     };
   }
 
@@ -507,7 +522,7 @@ export async function loginAction(
       return {
         status: "error",
         message:
-          "Não foi possível retomar o onboarding desta conta. Refaça o cadastro ou fale com a equipe DNL.",
+          "Não foi possível retomar o onboarding desta conta. Refaça o cadastro ou fale com a equipe Veela.",
       };
     }
 
@@ -665,6 +680,11 @@ export async function completeCustomerOnboardingAction(
     addressComplement: formData.get("addressComplement"),
     hasNoComplement: formData.get("hasNoComplement") === "on",
     referralSource: formData.get("referralSource"),
+    referralOther: formData.get("referralOther"),
+    addressStreet: formData.get("addressStreet"),
+    addressNeighborhood: formData.get("addressNeighborhood"),
+    addressCity: formData.get("addressCity"),
+    addressState: formData.get("addressState"),
   });
 
   if (!parsed.success) {
@@ -687,6 +707,28 @@ export async function completeCustomerOnboardingAction(
       message: addressResult.message,
     };
   }
+
+  const referralSource = normalizeOptionalString(parsed.data.referralSource);
+  const referralOther = normalizeOptionalString(parsed.data.referralOther);
+
+  if (referralSource === "Outro" && !referralOther) {
+    return {
+      status: "error",
+      message: "Especifique onde você conheceu a Veela.",
+    };
+  }
+
+  const viaCepAddress = await fetchViaCepAddress(addressResult.address.postalCode);
+  const address = {
+    ...addressResult.address,
+    street: normalizeOptionalString(parsed.data.addressStreet) ?? viaCepAddress?.street ?? null,
+    neighborhood:
+      normalizeOptionalString(parsed.data.addressNeighborhood) ??
+      viaCepAddress?.neighborhood ??
+      null,
+    city: normalizeOptionalString(parsed.data.addressCity) ?? viaCepAddress?.city ?? null,
+    state: normalizeOptionalString(parsed.data.addressState)?.toUpperCase() ?? viaCepAddress?.state ?? null,
+  };
 
   const requestHeaders = await headers();
   const supabase = await createClient();
@@ -761,7 +803,7 @@ export async function completeCustomerOnboardingAction(
     documentValue: pendingOnboarding.documentValue,
     phone: pendingOnboarding.phone,
     email: pendingOnboarding.email,
-    address: addressResult.address,
+    address,
     company: pendingOnboarding.company,
   });
 
@@ -776,7 +818,8 @@ export async function completeCustomerOnboardingAction(
   const ipAddress = getRequestIp(requestHeaders);
   const userAgent = requestHeaders.get("user-agent");
   const existingMetadata = authUserResponse.user.user_metadata ?? {};
-  const referralSource = normalizeOptionalString(parsed.data.referralSource);
+  const referralSourceValue =
+    referralSource === "Outro" ? `Outro: ${referralOther}` : referralSource;
 
   const { error: auditError } = await admin.from("audit_logs").insert({
     action: "customer_onboarding_completed",
@@ -789,10 +832,10 @@ export async function completeCustomerOnboardingAction(
       document_type: pendingOnboarding.documentType,
       profession: parsed.data.profession,
       workspace_name: parsed.data.workspaceName,
-      postal_code: addressResult.address.postalCode,
-      address_number: addressResult.address.number,
-      address_complement: addressResult.address.complement,
-      referral_source: referralSource,
+      postal_code: address.postalCode,
+      address_number: address.number,
+      address_complement: address.complement,
+      referral_source: referralSourceValue,
       preferred_billing_plan_code: pendingOnboarding.preferredPlanCode ?? null,
       ip_address: ipAddress,
       user_agent: userAgent,
@@ -826,7 +869,7 @@ export async function completeCustomerOnboardingAction(
         workspace_name: parsed.data.workspaceName,
         profession: parsed.data.profession,
         preferred_billing_plan_code: pendingOnboarding.preferredPlanCode ?? null,
-        referral_source: referralSource,
+        referral_source: referralSourceValue,
       },
     },
   );

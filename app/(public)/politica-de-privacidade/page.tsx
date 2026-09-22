@@ -4,7 +4,7 @@ import { LegalPage } from "@/components/legal/legal-page";
 export const metadata: Metadata = {
   title: "Política de Privacidade",
   description:
-    "Informações sobre coleta, uso, armazenamento e direitos de titulares de dados na Direito na Lente, em conformidade com a LGPD.",
+    "Informações sobre coleta, uso, armazenamento e direitos de titulares de dados no uso da plataforma Veela, em conformidade com a LGPD.",
 };
 
 const sections = [

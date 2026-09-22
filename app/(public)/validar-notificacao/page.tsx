@@ -163,7 +163,7 @@ export default async function ValidateNotificationPage({
       : null;
 
   return (
-    <div className="bg-[linear-gradient(180deg,#f5f8ff_0%,#ffffff_42%,#f8fbff_100%)]">
+    <div className="bg-[linear-gradient(180deg,#f5eeea_0%,#ffffff_42%,#cdd9e6_100%)]">
       <section className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:grid-cols-[0.92fr_1.08fr] lg:px-8 lg:py-16">
         <div className="space-y-6">
           <Badge variant="outline" className="h-7 rounded-md bg-white px-3">

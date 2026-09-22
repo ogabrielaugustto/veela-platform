@@ -53,7 +53,7 @@ function getDialogCopy(mode: InviteMode) {
       actionLabel: "Adicionar",
       buttonLabel: "Adicionar usuario",
       description:
-        "Cadastre um usuario interno da DNL. Voce pode enviar convite por e-mail ou criar a conta e receber a senha temporaria para repasse manual.",
+        "Cadastre um usuario interno da Veela. Voce pode enviar convite por e-mail ou criar a conta e receber a senha temporaria para repasse manual.",
       title: "Adicionar usuario interno",
     };
   }
@@ -72,7 +72,7 @@ function getDialogCopy(mode: InviteMode) {
     actionLabel: "Salvar convite",
     buttonLabel: "Convidar usuario",
     description:
-      "Convide um colaborador interno da DNL ou adicione um usuario de cliente com vinculacao direta a uma organizacao.",
+      "Convide um colaborador interno da Veela ou adicione um usuario de cliente com vinculacao direta a uma organizacao.",
     title: "Novo acesso administrativo",
   };
 }
@@ -190,7 +190,7 @@ export function InviteUserDialog({
                     <SelectValue placeholder="Selecione o tipo de acesso" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="internal">Colaborador interno DNL</SelectItem>
+                    <SelectItem value="internal">Colaborador interno Veela</SelectItem>
                     <SelectItem value="client">Usuario de cliente</SelectItem>
                   </SelectContent>
                 </Select>

@@ -4,7 +4,7 @@ import { LegalPage } from "@/components/legal/legal-page";
 export const metadata: Metadata = {
   title: "Termos de Uso",
   description:
-    "Condições de uso da plataforma Direito na Lente para clientes, usuários vinculados e equipe autorizada.",
+    "Condições de uso da plataforma Veela para clientes, usuários vinculados e equipe autorizada.",
 };
 
 const sections = [

@@ -7,6 +7,7 @@ import confetti from "canvas-confetti";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
+  PencilIcon,
   PartyPopperIcon,
   SparklesIcon,
 } from "lucide-react";
@@ -55,6 +56,7 @@ const referralOptions = [
   "Indicação",
   "Google",
   "Instagram",
+  "LinkedIn",
   "Outro",
 ] as const;
 
@@ -63,10 +65,10 @@ type CustomerOnboardingWizardProps = {
   pendingOnboarding: PendingSignupOnboarding;
 };
 
-const confettiPalette = ["#1d4ed8", "#2563eb", "#f59e0b", "#0f766e", "#14b8a6"];
+const confettiPalette = ["#2e4156", "#567c8d", "#cdd9e6", "#aeb7bd"];
 
 const controlClassName =
-  "h-12 rounded-lg border-slate-300 bg-white px-3.5 shadow-none transition-colors placeholder:text-slate-400 focus-visible:border-blue-600 focus-visible:ring-2 focus-visible:ring-blue-600/15";
+  "h-12 rounded-lg border-border bg-white px-3.5 shadow-none transition-colors placeholder:text-muted-foreground focus-visible:border-secondary focus-visible:ring-2 focus-visible:ring-ring/15";
 
 const secondaryButtonClassName =
   "h-11 gap-2 rounded-lg border-slate-300 bg-white px-5 text-slate-800 shadow-none hover:bg-slate-50";
@@ -115,7 +117,7 @@ function OnboardingProgress({ step, value }: { step: number; value: number }) {
         </div>
         <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
           <div
-            className="h-full rounded-full bg-blue-600 transition-[width] duration-500"
+            className="h-full rounded-full bg-primary transition-[width] duration-500"
             style={{ width: `${value}%` }}
           />
         </div>
@@ -150,6 +152,20 @@ export function CustomerOnboardingWizard({
     !pendingOnboarding.company?.complement,
   );
   const [referralSource, setReferralSource] = useState("");
+  const [referralOther, setReferralOther] = useState("");
+  const [isAddressEditing, setIsAddressEditing] = useState(false);
+  const [addressStreet, setAddressStreet] = useState(
+    pendingOnboarding.company?.street ?? "",
+  );
+  const [addressNeighborhood, setAddressNeighborhood] = useState(
+    pendingOnboarding.company?.neighborhood ?? "",
+  );
+  const [addressCity, setAddressCity] = useState(
+    pendingOnboarding.company?.city ?? "",
+  );
+  const [addressState, setAddressState] = useState(
+    pendingOnboarding.company?.state ?? "",
+  );
   const [resolvedAddress, setResolvedAddress] = useState<ViaCepAddress | null>(
     pendingOnboarding.company
       ? {
@@ -180,19 +196,32 @@ export function CustomerOnboardingWizard({
       .join(" • ");
   }, [pendingOnboarding.company]);
   const resolvedAddressLine = useMemo(() => {
-    if (!resolvedAddress) {
+    const address = {
+      street: addressStreet || resolvedAddress?.street,
+      neighborhood: addressNeighborhood || resolvedAddress?.neighborhood,
+      city: addressCity || resolvedAddress?.city,
+      state: addressState || resolvedAddress?.state,
+    };
+
+    if (!address.street && !address.neighborhood && !address.city && !address.state) {
       return null;
     }
 
     return formatResolvedAddressLine({
-      street: resolvedAddress.street,
-      neighborhood: resolvedAddress.neighborhood,
-      city: resolvedAddress.city,
-      state: resolvedAddress.state,
+      ...address,
       number: addressNumber,
       complement: hasNoComplement ? null : addressComplement,
     });
-  }, [addressComplement, addressNumber, hasNoComplement, resolvedAddress]);
+  }, [
+    addressCity,
+    addressComplement,
+    addressNeighborhood,
+    addressNumber,
+    addressState,
+    addressStreet,
+    hasNoComplement,
+    resolvedAddress,
+  ]);
 
   useEffect(() => {
     const normalizedPostalCode = normalizePostalCode(postalCode);
@@ -219,6 +248,12 @@ export function CustomerOnboardingWizard({
       }
 
       setResolvedAddress(address);
+      if (address) {
+        setAddressStreet((current) => current || address.street || "");
+        setAddressNeighborhood((current) => current || address.neighborhood || "");
+        setAddressCity((current) => current || address.city || "");
+        setAddressState((current) => current || address.state || "");
+      }
       setIsPostalCodeLoading(false);
     }
 
@@ -344,6 +379,15 @@ export function CustomerOnboardingWizard({
               value={hasNoComplement ? "on" : ""}
             />
             <input name="referralSource" type="hidden" value={referralSource} />
+            <input name="referralOther" type="hidden" value={referralOther} />
+            <input name="addressStreet" type="hidden" value={addressStreet} />
+            <input
+              name="addressNeighborhood"
+              type="hidden"
+              value={addressNeighborhood}
+            />
+            <input name="addressCity" type="hidden" value={addressCity} />
+            <input name="addressState" type="hidden" value={addressState} />
 
             {currentStep === 1 ? (
               <StepSection align="center">
@@ -504,6 +548,15 @@ export function CustomerOnboardingWizard({
                               ) {
                                 setIsPostalCodeLoading(false);
                                 setResolvedAddress(null);
+                                setAddressStreet("");
+                                setAddressNeighborhood("");
+                                setAddressCity("");
+                                setAddressState("");
+                              } else if (formattedPostalCode !== postalCode) {
+                                setAddressStreet("");
+                                setAddressNeighborhood("");
+                                setAddressCity("");
+                                setAddressState("");
                               }
                             }}
                             placeholder="00000-000"
@@ -577,10 +630,67 @@ export function CustomerOnboardingWizard({
                   ) : null}
 
                   {resolvedAddressLine ? (
-                    <div className="border-l-2 border-blue-600 bg-blue-50/70 px-4 py-3 text-sm leading-6 text-slate-800">
-                      <span className="font-medium text-slate-950">Endereço encontrado:</span>{" "}
-                      {resolvedAddressLine}
+                    <div className="border-l-2 border-secondary bg-muted px-4 py-3 text-sm leading-6 text-foreground">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
+                        <p>
+                          <span className="font-medium text-slate-950">Endereço encontrado:</span>{" "}
+                          {resolvedAddressLine}
+                        </p>
+                        <Button
+                          className="h-8 px-2.5"
+                          onClick={() => setIsAddressEditing((current) => !current)}
+                          type="button"
+                          variant="ghost"
+                        >
+                          <PencilIcon className="size-3.5" aria-hidden="true" />
+                          {isAddressEditing ? "Ocultar edição" : "Editar"}
+                        </Button>
+                      </div>
                     </div>
+                  ) : null}
+
+                  {isAddressEditing ? (
+                    <div className="grid gap-4 rounded-lg border border-slate-200 bg-slate-50/70 p-4 sm:grid-cols-2">
+                      <p className="sm:col-span-2 text-sm text-slate-600">
+                        Ajuste os dados completos somente se a busca não refletir o endereço.
+                      </p>
+                      <Field>
+                        <FieldLabel htmlFor="addressStreet">Logradouro</FieldLabel>
+                        <FieldContent>
+                          <Input id="addressStreet" onChange={(event) => setAddressStreet(event.target.value)} value={addressStreet} />
+                        </FieldContent>
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor="addressNeighborhood">Bairro</FieldLabel>
+                        <FieldContent>
+                          <Input id="addressNeighborhood" onChange={(event) => setAddressNeighborhood(event.target.value)} value={addressNeighborhood} />
+                        </FieldContent>
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor="addressCity">Cidade</FieldLabel>
+                        <FieldContent>
+                          <Input id="addressCity" onChange={(event) => setAddressCity(event.target.value)} value={addressCity} />
+                        </FieldContent>
+                      </Field>
+                      <Field>
+                        <FieldLabel htmlFor="addressState">UF</FieldLabel>
+                        <FieldContent>
+                          <Input id="addressState" maxLength={2} onChange={(event) => setAddressState(event.target.value.toUpperCase())} value={addressState} />
+                        </FieldContent>
+                      </Field>
+                    </div>
+                  ) : null}
+
+                  {!resolvedAddressLine && !isAddressEditing ? (
+                    <Button
+                      className="w-fit"
+                      onClick={() => setIsAddressEditing(true)}
+                      type="button"
+                      variant="outline"
+                    >
+                      <PencilIcon className="size-4" aria-hidden="true" />
+                      Informar endereço completo
+                    </Button>
                   ) : null}
                 </FieldGroup>
               </StepSection>
@@ -620,6 +730,23 @@ export function CustomerOnboardingWizard({
                       </Select>
                     </FieldContent>
                   </Field>
+
+                  {referralSource === "Outro" ? (
+                    <Field>
+                      <FieldLabel className="text-sm font-medium text-slate-900" htmlFor="referralOther">
+                        Onde você conheceu a Veela?
+                      </FieldLabel>
+                      <FieldContent>
+                        <Input
+                          className={controlClassName}
+                          id="referralOther"
+                          onChange={(event) => setReferralOther(event.target.value)}
+                          placeholder="Ex.: evento, podcast, comunidade..."
+                          value={referralOther}
+                        />
+                      </FieldContent>
+                    </Field>
+                  ) : null}
                 </FieldGroup>
               </StepSection>
             ) : null}

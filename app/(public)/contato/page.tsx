@@ -14,7 +14,7 @@ import { getPublicPlatformContactSettings } from "@/lib/dal/admin-platform";
 export const metadata: Metadata = {
   title: "Contato",
   description:
-    "Entre em contato com a equipe da Direito na Lente para conhecer a plataforma e estruturar seu monitoramento.",
+    "Fale com a equipe Veela para conhecer o monitoramento de imagens e organizar sua operação.",
 };
 
 export default async function ContactPage() {
@@ -88,7 +88,7 @@ export default async function ContactPage() {
           ) : null}
         </div>
 
-        <Card className="bg-white/90 shadow-[0_20px_70px_rgba(37,99,235,0.08)]">
+        <Card className="bg-white shadow-sm">
           <CardHeader>
             <CardTitle>Enviar mensagem</CardTitle>
           </CardHeader>
@@ -98,7 +98,7 @@ export default async function ContactPage() {
         </Card>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-[2rem] bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.95),transparent_30%),linear-gradient(135deg,oklch(0.2_0.04_260),oklch(0.3_0.05_240))] p-8 text-white lg:flex-row lg:items-center lg:justify-between lg:p-10">
+      <section className="flex flex-col gap-4 rounded-2xl bg-[#2e4156] p-8 text-white lg:flex-row lg:items-center lg:justify-between lg:p-10">
         <div className="space-y-2">
           <h2 className="font-heading text-3xl font-semibold tracking-tight">
             Prefere começar pela conta?

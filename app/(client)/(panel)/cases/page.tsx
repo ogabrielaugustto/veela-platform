@@ -22,7 +22,7 @@ export default async function CasesPage() {
             Casos em acompanhamento
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Acompanhe os casos encaminhados para a equipe DNL e o andamento de cada analise.
+            Acompanhe os casos encaminhados para a equipe Veela e o andamento de cada analise.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">

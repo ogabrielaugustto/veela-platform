@@ -270,7 +270,7 @@ export default async function ClientCaseDetailsPage({
             Analise do caso {formatPublicId(clientCase.publicId)}
           </h1>
           <p className="mt-2 max-w-3xl text-sm text-muted-foreground">
-            Acompanhe o andamento deste caso com a equipe DNL, veja as paginas agrupadas
+            Acompanhe o andamento deste caso com a equipe Veela, veja as paginas agrupadas
             e consulte o historico de atualizacoes em um unico lugar.
           </p>
           <p className="mt-3 text-sm text-muted-foreground">
@@ -311,7 +311,7 @@ export default async function ClientCaseDetailsPage({
             <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
               <InfoBlock label="Dominio principal" value={formatDomain(clientCase.domain)} />
               <InfoBlock
-                label="Encaminhado para a DNL"
+                label="Encaminhado para a Veela"
                 value={formatDate(clientCase.clientReviewedAt)}
               />
               <InfoBlock label="Ultima deteccao" value={formatDate(clientCase.latestSeenAt)} />
@@ -537,7 +537,7 @@ export default async function ClientCaseDetailsPage({
                   Timeline do caso
                 </h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  Aqui voce acompanha as atualizacoes registradas pela sua equipe e pela DNL.
+                  Aqui voce acompanha as atualizacoes registradas pela sua equipe e pela Veela.
                 </p>
               </div>
               <Badge variant="outline">{clientCase.actionHistory.length} evento(s)</Badge>
@@ -550,7 +550,7 @@ export default async function ClientCaseDetailsPage({
                     <TimelineItem
                       key={action.id}
                       title={formatActionLabel(action.action)}
-                      subtitle={`${action.actorName ?? action.actorEmail ?? "Equipe DNL"} em ${formatDate(action.createdAt)}`}
+                      subtitle={`${action.actorName ?? action.actorEmail ?? "Equipe Veela"} em ${formatDate(action.createdAt)}`}
                       reason={action.reason}
                       notes={action.notes}
                       occurrenceLabel={`Ocorrencia ${formatPublicId(

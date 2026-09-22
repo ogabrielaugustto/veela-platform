@@ -8,6 +8,7 @@ import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import { OrganizationSwitcher } from "@/components/organization-switcher"
 import { APP_NAME } from "@/lib/brand"
+import { BrandLogo } from "@/components/brand-logo"
 import {
   Sidebar,
   SidebarContent,
@@ -86,9 +87,7 @@ export function AppSidebar({
                 </div>
                 <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{panel.title}</span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {panel.subtitle}
-                  </span>
+                  <BrandLogo className="h-auto w-14" />
                 </div>
               </SidebarMenuButton>
             </SidebarMenuItem>

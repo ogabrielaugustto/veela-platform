@@ -37,7 +37,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { APP_NAME } from "@/lib/brand";
+import { BrandLogo } from "@/components/brand-logo";
 
 type OrganizationItem = {
   organizationId: string;
@@ -84,9 +84,7 @@ export function OrganizationSwitcher({
                   <span className="truncate font-medium">
                     {currentOrganizationName}
                   </span>
-                  <span className="truncate text-xs text-muted-foreground">
-                    {APP_NAME}
-                  </span>
+                  <BrandLogo className="h-auto w-14" />
                 </div>
                 <ChevronsUpDownIcon className="ml-auto size-4" />
               </SidebarMenuButton>

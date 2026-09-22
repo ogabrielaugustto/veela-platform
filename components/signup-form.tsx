@@ -176,7 +176,7 @@ export function SignupForm({
               >
                 Política de Privacidade
               </Link>{" "}
-              da DNL para concluir meu cadastro.
+              da Veela para concluir meu cadastro.
             </span>
           </label>
         </Field>

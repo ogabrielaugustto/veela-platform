@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import {
   BriefcaseIcon,
   BriefcaseBusinessIcon,
@@ -14,6 +15,10 @@ import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { APP_NAME } from "@/lib/brand";
 import { requirePanelAccess } from "@/lib/auth";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 const adminNavigation = [
   { title: "Visao geral", url: "/admin", icon: <GaugeIcon /> },
