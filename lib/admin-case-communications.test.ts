@@ -25,6 +25,8 @@ test("builds an editable draft for every communication action", () => {
     ["c1", "c1"],
     ["c1p", "c1p"],
     ["c2", "c2"],
+    ["negotiation", "negotiation"],
+    ["collections", "collections"],
   ]);
 
   for (const [actionKind, communicationKind] of expectedKinds) {

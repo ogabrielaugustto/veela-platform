@@ -1,5 +1,7 @@
 "use client";
 
+import { initialAdminCaseSraActionState } from "@/lib/admin-case-action-state";
+
 import { useActionState, useState } from "react";
 import {
   ChevronDownIcon,
@@ -9,7 +11,6 @@ import {
   ScaleIcon,
 } from "lucide-react";
 import {
-  initialAdminCaseSraActionState,
   requestAdminCaseSraAction,
 } from "@/app/actions/admin-case-sra";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,7 @@ import {
   type CommunicationAttachmentPreview,
 } from "@/lib/admin-case-communications";
 import type { AdminCaseSraDefaults } from "@/lib/dal/admin-case-sra";
+import { AdminCaseOperationalDialog } from "./admin-case-operational-dialog";
 import { AdminCaseCommunicationDialog } from "./admin-case-communication-dialog";
 
 type AdminCaseActionContext = {
@@ -59,6 +61,7 @@ type AdminCaseActionContext = {
 
 type AdminCaseActionMenuProps = {
   context: AdminCaseActionContext;
+  closed: boolean;
 };
 
 const communicationActions: AdminCaseActionKind[] = [
@@ -148,8 +151,9 @@ function FormSection({
   );
 }
 
-export function AdminCaseActionMenu({ context }: AdminCaseActionMenuProps) {
+export function AdminCaseActionMenu({ context, closed }: AdminCaseActionMenuProps) {
   const [sraOpen, setSraOpen] = useState(false);
+  const [operationalAction, setOperationalAction] = useState<AdminCaseActionKind | null>(null);
   const [communicationAction, setCommunicationAction] =
     useState<AdminCaseCommunicationActionKind | null>(null);
   const [state, formAction, pending] = useActionState(
@@ -163,7 +167,7 @@ export function AdminCaseActionMenu({ context }: AdminCaseActionMenuProps) {
     <>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button>
+          <Button disabled={closed} title={closed ? "Este caso já está encerrado." : undefined}>
             Executar ação
             <ChevronDownIcon className="size-4" />
           </Button>
@@ -190,7 +194,7 @@ export function AdminCaseActionMenu({ context }: AdminCaseActionMenuProps) {
             Tratativas
           </DropdownMenuLabel>
           {internalActions.map((action) => (
-            <ActionMenuItem action={action} key={action} onSelect={() => undefined} />
+            <ActionMenuItem action={action} key={action} onSelect={() => setOperationalAction(action)} />
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuLabel className="flex items-center gap-2">
@@ -202,8 +206,12 @@ export function AdminCaseActionMenu({ context }: AdminCaseActionMenuProps) {
               action={action}
               key={action}
               onSelect={() => {
-                if (action === "register_sra") {
+                if (isAdminCaseCommunicationAction(action)) {
+                  setCommunicationAction(action);
+                } else if (action === "register_sra") {
                   setSraOpen(true);
+                } else if (action === "register_payment") {
+                  setOperationalAction(action);
                 }
               }}
             />
@@ -214,7 +222,7 @@ export function AdminCaseActionMenu({ context }: AdminCaseActionMenuProps) {
             Encaminhamento
           </DropdownMenuLabel>
           {closingActions.map((action) => (
-            <ActionMenuItem action={action} key={action} onSelect={() => undefined} />
+            <ActionMenuItem action={action} key={action} onSelect={() => setOperationalAction(action)} />
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
@@ -235,6 +243,8 @@ export function AdminCaseActionMenu({ context }: AdminCaseActionMenuProps) {
           }}
         />
       ) : null}
+
+      {operationalAction ? <AdminCaseOperationalDialog key={operationalAction} action={operationalAction} organizationId={context.organizationId} casePublicId={context.casePublicId} onClose={() => setOperationalAction(null)} /> : null}
 
       <Dialog open={sraOpen} onOpenChange={setSraOpen}>
         <DialogContent className="max-h-[calc(100svh-2rem)] overflow-y-auto sm:max-w-3xl">

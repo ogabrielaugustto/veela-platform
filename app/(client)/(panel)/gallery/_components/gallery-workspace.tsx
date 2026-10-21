@@ -288,7 +288,10 @@ export function GalleryWorkspace({
       <form
         id={uploadFormId}
         action={action}
-        onSubmit={() => setRepresentationDialogDismissed(false)}
+        onSubmit={() => {
+          syncInputFiles(files.map((entry) => entry.file));
+          setRepresentationDialogDismissed(false);
+        }}
       >
         <input type="hidden" name="existingFolderId" value={activeFolderId ?? ""} />
         <input type="hidden" name="newFolderName" value="" />
@@ -412,7 +415,7 @@ export function GalleryWorkspace({
         )}
       </div>
 
-      <ClientRepresentationRequiredDialog
+      {representationDialogOpen ? <ClientRepresentationRequiredDialog
         defaults={representationDefaults}
         gate={representationGate}
         open={representationDialogOpen}
@@ -421,7 +424,7 @@ export function GalleryWorkspace({
             setRepresentationDialogDismissed(true);
           }
         }}
-      />
+      /> : null}
 
       {state.message && state.status !== "signature_required" ? (
         <div className="fixed inset-x-4 bottom-24 z-40 mx-auto max-w-xl rounded-lg border border-destructive/25 bg-background px-4 py-3 shadow-lg md:bottom-24">

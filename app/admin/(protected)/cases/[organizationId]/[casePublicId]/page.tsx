@@ -34,6 +34,9 @@ import { getAdminCaseSraDefaults } from "@/lib/dal/admin-case-sra";
 import { getCurrentClientRepresentationDocument } from "@/lib/dal/client-representation-documents";
 import { formatPublicId } from "@/lib/public-id";
 import { AdminCaseActionMenu } from "./_components/admin-case-action-menu";
+import { PendingCommunicationReview } from "./_components/pending-communication-review";
+import { EvidencePreview } from "./_components/evidence-preview";
+import { getEvidencePreviewSources } from "@/lib/admin-case-evidence-preview";
 
 type AdminCaseDetailsPageProps = {
   params: Promise<{
@@ -297,7 +300,9 @@ function PagesPanel({ adminCase }: { adminCase: AdminCaseDetails }) {
 }
 
 function Timeline({ adminCase }: { adminCase: AdminCaseDetails }) {
-  const events = adminCase.workflow.events;
+  const events = [...adminCase.workflow.events].sort(
+    (left, right) => Number(Boolean(right.pendingCommunication)) - Number(Boolean(left.pendingCommunication)),
+  );
 
   if (events.length === 0) {
     return (
@@ -327,6 +332,13 @@ function Timeline({ adminCase }: { adminCase: AdminCaseDetails }) {
               <p className="mt-2 text-sm leading-6 text-foreground">
                 {event.communicationSubject}
               </p>
+            ) : null}
+            {event.pendingCommunication ? <PendingCommunicationReview organizationId={adminCase.organization.id} casePublicId={adminCase.publicId} eventId={event.id} action={event.pendingCommunication.action} to={event.pendingCommunication.to} /> : null}
+            {event.communicationBody ? (
+              <details className="mt-2 text-sm">
+                <summary className="cursor-pointer font-medium">Ver conteúdo da comunicação</summary>
+                <p className="mt-2 whitespace-pre-wrap leading-6 text-muted-foreground">{event.communicationBody}</p>
+              </details>
             ) : null}
             {event.notes ? (
               <p className="mt-1 text-sm leading-6 text-muted-foreground">{event.notes}</p>
@@ -417,13 +429,11 @@ export default async function AdminCaseDetailsPage({
     getCurrentClientRepresentationDocument(adminCase.organization.id, "soa"),
   ]);
   const representativePlacement = adminCase.placements[0] ?? null;
-  const evidencePreviewUrl =
-    adminCase.matchedImageUrl ??
-    adminCase.screenshotUrl ??
-    representativePlacement?.latestEvidence?.matchedImageUrl ??
-    representativePlacement?.latestEvidence?.screenshotUrl ??
-    representativePlacement?.matchedImageUrl ??
-    null;
+  const evidencePreviewSources = getEvidencePreviewSources({
+    storedImage: representativePlacement?.latestEvidence?.matchedImageUrl,
+    screenshot: adminCase.screenshotUrl ?? representativePlacement?.latestEvidence?.screenshotUrl,
+    externalImage: adminCase.matchedImageUrl ?? representativePlacement?.matchedImageUrl,
+  });
   const casePublicIdLabel = formatPublicId(adminCase.publicId);
   const notifiedName =
     adminCase.workflow.notified.name ??
@@ -521,7 +531,7 @@ export default async function AdminCaseDetailsPage({
             </p>
           </div>
 
-          <AdminCaseActionMenu context={actionContext} />
+          <AdminCaseActionMenu context={actionContext} closed={adminCase.workflow.stage === "closed" || adminCase.status === "resolved"} />
         </div>
       </header>
 
@@ -535,12 +545,12 @@ export default async function AdminCaseDetailsPage({
                 alt={adminCase.asset.title}
                 fallback="A imagem original ainda não possui preview disponível."
               />
-              <ImagePanel
-                title="Imagem encontrada / evidência"
-                imageUrl={evidencePreviewUrl}
-                alt={`Preview do caso ${adminCase.publicId}`}
-                fallback="Nenhuma evidência visual foi preservada ainda para este caso."
-              />
+              <div className="min-w-0">
+                <h2 className="text-sm font-medium text-foreground">Imagem encontrada / evidência</h2>
+                <div className="mt-3 overflow-hidden rounded-md border border-border bg-muted/20">
+                  <EvidencePreview sources={evidencePreviewSources} alt={`Preview do caso ${adminCase.publicId}`} />
+                </div>
+              </div>
             </div>
           </Section>
 

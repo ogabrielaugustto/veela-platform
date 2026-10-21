@@ -49,7 +49,8 @@ export type CaseCommunicationKind =
   | "c1"
   | "c1p"
   | "c2"
-  | "negotiation";
+  | "negotiation"
+  | "collections";
 
 export type CaseTreatmentKind = "doubt" | "debate" | "follow_up" | "call" | "other";
 
@@ -171,6 +172,7 @@ export const COMMUNICATION_KIND_LABELS: Record<CaseCommunicationKind, string> = 
   c1p: "C1P - segunda cobrança de retorno",
   c2: "C2 - encerramento de tratativas",
   negotiation: "Negociação / proposta",
+  collections: "Inadimplência / cobrança",
 };
 
 export const TREATMENT_KIND_LABELS: Record<CaseTreatmentKind, string> = {
@@ -550,7 +552,10 @@ export function isAdminCaseActionEnabled(kind: string): kind is AdminCaseActionK
     kind === "c1" ||
     kind === "c1p" ||
     kind === "c2" ||
-    kind === "register_sra"
+    kind === "register_sra" ||
+    kind === "follow_up" || kind === "call" || kind === "internal_note" ||
+    kind === "legal" || kind === "register_payment" || kind === "close_resolved" ||
+    kind === "negotiation" || kind === "collections"
   );
 }
 
@@ -636,6 +641,12 @@ export function buildCaseCommunicationSnapshot(
           "A Direito na Lente podera encaminhar o caso para avaliacao juridica e novas providencias.",
           commonFooter,
         ].join("\n"),
+      };
+    case "collections":
+      return {
+        kind,
+        subject: `Cobrança de pagamento - caso ${reference}`,
+        body: [`Olá, ${notifiedName}.`, "", `Registramos uma pendência de pagamento relacionada ao caso ${reference}, no domínio ${context.domain}.`, "Solicitamos retorno para regularização ou envio do comprovante.", commonFooter].join("\n"),
       };
     case "negotiation":
       return {

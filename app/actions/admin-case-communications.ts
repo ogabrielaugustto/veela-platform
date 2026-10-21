@@ -16,6 +16,8 @@ import {
 import { buildCaseValidationUrl } from "@/lib/case-validation-code";
 import { createCasePublicValidationCode } from "@/lib/dal/case-public-validation";
 import { getAdminCaseDetails } from "@/lib/dal/admin-cases";
+import { validateCaseOpen } from "@/lib/admin-case-operational";
+import { processFinancialCommunication } from "@/lib/admin-case-financial-send";
 import { getAppUrl, sendCaseCommunicationEmail } from "@/lib/email/service";
 import { formatPublicId } from "@/lib/public-id";
 import { readCaseDocumentFromR2 } from "@/lib/r2";
@@ -29,6 +31,8 @@ const actionSchema = z.object({
   subject: z.string().trim().min(3, "Informe o assunto.").max(180),
   body: z.string().trim().min(10, "Revise o conteúdo da mensagem.").max(12_000),
   notes: z.string().trim().max(2_000).nullable(),
+  operationId: z.string().optional(),
+  proposedAmount: z.string().optional(),
   confirmed: z.literal("true", {
     error: "Confirme a revisão antes de enviar.",
   }),
@@ -38,11 +42,7 @@ export type AdminCaseCommunicationState = {
   status: "idle" | "success" | "error";
   message: string;
   fieldErrors?: Record<string, string[]>;
-};
-
-export const initialAdminCaseCommunicationState: AdminCaseCommunicationState = {
-  status: "idle",
-  message: "",
+  retryOnly?: boolean;
 };
 
 type CaseDocumentAttachmentRow = {
@@ -373,6 +373,8 @@ export async function executeAdminCaseCommunication(
     body: formData.get("body"),
     notes: optionalString(formData.get("notes")),
     confirmed: formData.get("confirmed"),
+    operationId: optionalString(formData.get("operationId")) ?? undefined,
+    proposedAmount: optionalString(formData.get("proposedAmount")) ?? undefined,
   });
 
   if (!parsed.success) {
@@ -392,7 +394,54 @@ export async function executeAdminCaseCommunication(
       return { status: "error", message: "Caso não encontrado ou acesso negado." };
     }
 
+    const closedError = validateCaseOpen(adminCase.workflow.stage, adminCase.status);
+    if (closedError) return { status: "error", message: closedError };
+
     const casePublicIdLabel = formatPublicId(adminCase.publicId);
+    if (data.actionKind === "negotiation" || data.actionKind === "collections") {
+      const id = z.uuid().safeParse(data.operationId);
+      const amountText = data.proposedAmount ?? "";
+      const amount = /^\d+(?:[.,]\d{1,2})?$/.test(amountText) ? Math.round(Number(amountText.replace(",", ".")) * 100) : null;
+      if (!id.success || (data.actionKind === "negotiation" && (!amount || amount > 2147483647))) {
+        return { status: "error", message: "Informe um valor de proposta válido e revise o envio." };
+      }
+      const supabase = await createClient();
+      const { data: reservation, error: reserveError } = await supabase.rpc("reserve_case_financial_communication", {
+        p_id: id.data, p_organization_id: adminCase.organization.id, p_case_public_id: adminCase.publicId,
+        p_detection_id: adminCase.representativeDetectionId, p_action: data.actionKind, p_to: data.to,
+        p_subject: data.subject, p_body: data.body, p_notes: data.notes, p_amount: data.actionKind === "negotiation" ? amount : null,
+      });
+      if (reserveError) {
+        console.error("Falha ao preparar comunicação financeira", reserveError);
+        return { status: "error", message: "Não foi possível preparar o envio. Confira o acordo e se há uma tentativa pendente no histórico." };
+      }
+      if (reservation !== "pending" && reservation !== "sent") {
+        return { status: "error", message: "Não foi possível confirmar a tentativa de envio." };
+      }
+      const result = await processFinancialCommunication({
+        reserve: async () => reservation,
+        send: () => sendCaseCommunicationEmail({
+          to: data.to, subject: data.subject, body: data.body, casePublicIdLabel,
+          clientName: adminCase.organization.name, domain: adminCase.domain,
+          sourceUrl: adminCase.sourceUrl, idempotencyKey: `case-communication/${id.data}`,
+        }),
+        finalize: async () => {
+          const { error } = await supabase.rpc("finalize_case_financial_communication", {
+            p_id: id.data, p_organization_id: adminCase.organization.id, p_case_public_id: adminCase.publicId,
+          });
+          if (error) throw error;
+        },
+      });
+      if (result === "send_uncertain") {
+        return { status: "error", retryOnly: true, message: "O resultado do envio é incerto. Mantenha o conteúdo e tente novamente nesta sessão; confira o histórico antes de criar outra tentativa." };
+      }
+      if (result === "record_pending") {
+        return { status: "error", retryOnly: true, message: "O e-mail foi enviado, mas o registro não foi concluído. Tente novamente nesta sessão sem alterar o conteúdo." };
+      }
+      revalidatePath("/admin/cases");
+      revalidatePath(`/admin/cases/${adminCase.organization.id}/${adminCase.publicId}`);
+      return { status: "success", message: `Comunicação enviada para ${data.to} e registrada no caso.` };
+    }
     const attachments =
       data.actionKind === "documentation_notice"
         ? await loadDocumentationAttachments({
@@ -463,5 +512,43 @@ export async function executeAdminCaseCommunication(
           ? error.message
           : "Não foi possível enviar a comunicação. Tente novamente.",
     };
+  }
+}
+
+export async function resolvePendingCaseCommunication(
+  _previousState: AdminCaseCommunicationState,
+  formData: FormData,
+): Promise<AdminCaseCommunicationState> {
+  const parsed = z.object({
+    organizationId: z.uuid(),
+    casePublicId: z.coerce.number().int().positive(),
+    eventId: z.uuid(),
+    resolution: z.enum(["sent", "not_sent"]),
+    confirmed: z.literal("true"),
+  }).safeParse({
+    organizationId: formData.get("organizationId"),
+    casePublicId: formData.get("casePublicId"),
+    eventId: formData.get("eventId"),
+    resolution: formData.get("resolution"),
+    confirmed: formData.get("confirmed"),
+  });
+  if (!parsed.success) return { status: "error", message: "Selecione o resultado e confirme a conferência." };
+  try {
+    await requirePanelAccess("admin");
+    const data = parsed.data;
+    const adminCase = await getAdminCaseDetails(data.organizationId, data.casePublicId);
+    if (!adminCase || adminCase.organization.id !== data.organizationId) return { status: "error", message: "Caso não encontrado ou acesso negado." };
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("resolve_case_financial_communication", {
+      p_id: data.eventId, p_organization_id: data.organizationId,
+      p_case_public_id: data.casePublicId, p_resolution: data.resolution,
+    });
+    if (error) throw error;
+    revalidatePath("/admin/cases");
+    revalidatePath(`/admin/cases/${data.organizationId}/${data.casePublicId}`);
+    return { status: "success", message: "Conferência registrada no histórico." };
+  } catch (error) {
+    console.error("Falha ao conferir comunicação pendente", error);
+    return { status: "error", message: "Não foi possível registrar a conferência. Confira o histórico e tente novamente." };
   }
 }

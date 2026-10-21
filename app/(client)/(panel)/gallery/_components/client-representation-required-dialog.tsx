@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
 import { useActionState } from "react";
 import { FileSignatureIcon, MailCheckIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import {
   requestSoaSignatureAction,
+  verifySoaSignatureAction,
   type SoaSignatureActionState,
 } from "@/app/actions/client-representation-documents";
 import { Button } from "@/components/ui/button";
@@ -41,60 +39,50 @@ export function ClientRepresentationRequiredDialog({
   open,
   onOpenChange,
 }: ClientRepresentationRequiredDialogProps) {
-  const router = useRouter();
   const [state, action, pending] = useActionState(
     requestSoaSignatureAction,
     initialState,
   );
-  const hasPendingRequest =
-    gate.blockReason === "pending" && gate.document?.status === "signature_requested";
-  const success = state.status === "success";
-
-  useEffect(() => {
-    if (state.status !== "success" || !state.message) {
-      return;
-    }
-
-    toast.success(state.message, { duration: 6_000 });
-    router.refresh();
-  }, [router, state.message, state.status]);
+  const [verification, verify, verifying] = useActionState(verifySoaSignatureAction, initialState);
+  const hasPendingRequest = gate.blockReason === "pending" && gate.document?.status === "signature_requested";
+  const success = state.status === "success" || verification.status === "success";
+  const signed = verification.status === "success" || state.representationStatus === "already_signed";
+  const signerEmail = state.signerEmail ?? gate.document?.signerEmail;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[calc(100svh-2rem)] overflow-y-auto p-0 sm:max-w-2xl">
+      <DialogContent showCloseButton={!success} className="max-h-[calc(100svh-2rem)] overflow-y-auto p-0 sm:max-w-2xl">
         <div className="border-b border-border bg-muted/35 px-6 py-5">
           <DialogHeader>
             <div className="mb-2 flex size-10 items-center justify-center rounded-md border border-border bg-background shadow-sm">
               <FileSignatureIcon className="size-5 text-primary" aria-hidden="true" />
             </div>
-            <DialogTitle>Assinatura do SOA obrigatoria</DialogTitle>
-            <DialogDescription className="max-w-xl leading-6">
-              Antes de iniciar o monitoramento da primeira imagem, precisamos que voce
-              assine a representacao da Direito na Lente pela Clicksign.
+            <DialogTitle>{success ? (signed ? "Assinatura confirmada" : "SOA enviado") : "Assinatura do SOA obrigatória"}</DialogTitle>
+            <DialogDescription className={success ? "sr-only" : "max-w-xl leading-6"}>
+              {success ? "Resultado da solicitação de assinatura." : "Antes de iniciar o monitoramento da primeira imagem, precisamos que você assine a representação da Direito na Lente pela Clicksign."}
             </DialogDescription>
           </DialogHeader>
         </div>
 
+        {success ? (
+          <div className="space-y-5 px-6 py-5">
+            <div className="flex items-start gap-3 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+              <MailCheckIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <p>{signed ? "Assinatura confirmada. Volte para a galeria e confirme o envio das imagens novamente." : `Enviamos o SOA pela Clicksign para ${signerEmail}. Depois da assinatura, volte para a galeria e confirme o envio das imagens novamente.`}</p>
+            </div>
+            <div className="flex justify-end"><Button type="button" onClick={() => onOpenChange(false)}>Fechar</Button></div>
+          </div>
+        ) : hasPendingRequest ? (
+          <form action={verify} className="space-y-5 px-6 py-5">
+            <p className="text-sm leading-6">O SOA foi enviado para {gate.document?.signerEmail}. Após assinar, verifique a assinatura e confirme o envio das imagens novamente.</p>
+            {verification.message ? <FieldError>{verification.message}</FieldError> : null}
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={verifying}>Fechar</Button>
+              <Button type="submit" disabled={verifying}>{verifying ? "Verificando..." : "Já assinei — verificar"}</Button>
+            </div>
+          </form>
+        ) : (
         <form action={action} className="space-y-5 px-6 py-5">
-          {hasPendingRequest ? (
-            <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-900">
-              O SOA ja foi enviado para {gate.document?.signerEmail}. Assine pelo
-              e-mail recebido e depois confirme o envio das imagens novamente.
-            </div>
-          ) : null}
-
-          {success ? (
-            <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
-              <div className="flex items-start gap-3">
-                <MailCheckIcon className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
-                <p>
-                  {state.message} Depois da assinatura, volte para a galeria e confirme
-                  o envio das imagens novamente.
-                </p>
-              </div>
-            </div>
-          ) : null}
-
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label htmlFor="soa-full-name">Nome completo</Label>
@@ -173,6 +161,7 @@ export function ClientRepresentationRequiredDialog({
             </Button>
           </div>
         </form>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -2,6 +2,7 @@ import "server-only";
 
 import {
   createClicksignSoaEnvelope,
+  getClicksignSoaStatus,
   type ClicksignEnvironment,
 } from "@/lib/clicksign/client";
 import {
@@ -11,6 +12,7 @@ import {
   extractClicksignWebhookStatusInput,
   getRepresentationUploadBlockReason,
   mapClicksignWebhookStatus,
+  mapSoaProviderStatus,
   type RepresentationDocumentKind,
   type RepresentationDocumentStatus,
   type RepresentationUploadBlockReason,
@@ -358,6 +360,27 @@ async function getCurrentDocumentWithAdmin(params: {
   }
 
   return data ? toClientRepresentationDocument(data) : null;
+}
+
+export async function reconcileClientSoa(organizationId: string) {
+  const current = await getCurrentDocumentWithAdmin({ organizationId, kind: "soa" });
+  if (!current || current.status !== "signature_requested") return current;
+  if (!current.providerEnvelopeId || !current.providerDocumentId) {
+    throw new Error("Não foi possível localizar o documento na Clicksign. Entre em contato com o suporte.");
+  }
+  const admin = createAdminClient();
+  const { data: row, error: readError } = await admin.from("client_representation_documents")
+    .select("provider_environment").eq("id", current.id).eq("organization_id", organizationId)
+    .eq("is_current", true).maybeSingle<{ provider_environment: ClicksignEnvironment }>();
+  if (readError || !row) throw new Error("Não foi possível verificar o documento. Tente novamente.");
+  const provider = await getClicksignSoaStatus({ environment: row.provider_environment, envelopeId: current.providerEnvelopeId, documentId: current.providerDocumentId });
+  const status = mapSoaProviderStatus(provider.envelopeStatus, provider.documentStatus);
+  if (!status) return current;
+  const { error } = await admin.from("client_representation_documents").update({
+    status, last_event_name: "provider_status_reconciliation", last_event_at: new Date().toISOString(),
+  }).eq("id", current.id).eq("organization_id", organizationId).eq("is_current", true).eq("status", "signature_requested");
+  if (error) throw new Error("Não foi possível atualizar o status da assinatura. Tente novamente.");
+  return getCurrentDocumentWithAdmin({ organizationId, kind: "soa" });
 }
 
 export async function requestClicksignSoaSignature(params: {

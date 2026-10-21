@@ -22,6 +22,8 @@ import { createCasePublicValidationCode } from "@/lib/dal/case-public-validation
 import { getAppUrl, sendCaseCommunicationEmail } from "@/lib/email/service";
 import { uploadCaseDocumentToR2 } from "@/lib/r2";
 import { createClient } from "@/lib/server";
+import { getAdminCaseDetails } from "@/lib/dal/admin-cases";
+import { validateOperationalAction, type OperationalActionKind } from "@/lib/admin-case-operational";
 
 const contextSchema = z.object({
   organizationId: z.uuid(),
@@ -143,11 +145,6 @@ export type AdminCaseActionState = {
   status: "idle" | "success" | "error";
   message: string;
   fieldErrors?: Record<string, string[]>;
-};
-
-export const initialAdminCaseActionState: AdminCaseActionState = {
-  status: "idle",
-  message: "",
 };
 
 type CaseDetectionStatusRow = {
@@ -336,6 +333,8 @@ function communicationStage(kind: CaseCommunicationKind): WorkflowStage {
       return "documentation_notice";
     case "negotiation":
       return "negotiation";
+    case "collections":
+      return "collections";
     case "c2":
       return "legal";
     case "c1":
@@ -1511,4 +1510,62 @@ export async function upsertCaseSettlementAction(formData: FormData) {
     userId: context.userId,
   });
   revalidateCasePaths(parsed.data);
+}
+
+
+const operationalSchema = z.object({
+  organizationId: z.uuid(),
+  casePublicId: z.coerce.number().int().positive(),
+  actionKind: z.enum(["follow_up", "call", "internal_note", "register_payment", "legal", "close_resolved"]),
+  notes: z.string().trim().max(4000),
+  paidAmount: z.string().trim(),
+  paidAt: z.string().trim(),
+  paymentMethod: z.string().trim(),
+  paymentReference: z.string().trim().max(180),
+});
+
+export async function executeOperationalCaseAction(
+  _previous: AdminCaseActionState,
+  formData: FormData,
+): Promise<AdminCaseActionState> {
+  const parsed = operationalSchema.safeParse({
+    organizationId: formData.get("organizationId"), casePublicId: formData.get("casePublicId"),
+    actionKind: formData.get("actionKind"), notes: formData.get("notes") ?? "",
+    paidAmount: formData.get("paidAmount") ?? "", paidAt: formData.get("paidAt") ?? "",
+    paymentMethod: formData.get("paymentMethod") ?? "", paymentReference: formData.get("paymentReference") ?? "",
+  });
+  if (!parsed.success) return { status: "error", message: "Revise os campos da ação." };
+  const data = parsed.data;
+  try {
+    await requirePanelAccess("admin");
+    const adminCase = await getAdminCaseDetails(data.organizationId, data.casePublicId);
+    if (!adminCase || adminCase.organization.id !== data.organizationId) return { status: "error", message: "Caso não encontrado ou acesso negado." };
+    const amount = /^\d+(?:[.,]\d{1,2})?$/.test(data.paidAmount) ? Math.round(Number(data.paidAmount.replace(",", ".")) * 100) : null;
+    const validation = validateOperationalAction({ kind: data.actionKind as OperationalActionKind, notes: data.notes,
+      settlementAmount: adminCase.workflow.settlement?.proposedAmountCents ?? null, paidAmount: amount,
+      hasSra: adminCase.workflow.documents.some((doc) => doc.kind === "sra" && ["signed", "attached"].includes(doc.status)),
+      closed: adminCase.workflow.stage === "closed" || adminCase.status === "resolved" });
+    if (validation) return { status: "error", message: validation };
+    if (data.actionKind === "register_payment" && (!/^\d{4}-\d{2}-\d{2}$/.test(data.paidAt) || Number.isNaN(Date.parse(`${data.paidAt}T00:00:00Z`)) || !["pix", "boleto", "transfer", "other"].includes(data.paymentMethod))) {
+      return { status: "error", message: "Informe data e forma de pagamento válidas." };
+    }
+    const supabase = await createClient();
+    const { error } = await supabase.rpc("execute_case_operational_action", {
+      p_organization_id: adminCase.organization.id,
+      p_case_public_id: adminCase.publicId,
+      p_detection_id: adminCase.representativeDetectionId,
+      p_action: data.actionKind,
+      p_notes: data.notes,
+      p_paid_amount: data.actionKind === "register_payment" ? amount : null,
+      p_paid_date: data.actionKind === "register_payment" ? data.paidAt : null,
+      p_payment_method: data.actionKind === "register_payment" ? data.paymentMethod : null,
+      p_payment_reference: data.actionKind === "register_payment" ? data.paymentReference : null,
+    });
+    if (error) throw error;
+    revalidateCasePaths(data);
+    return { status: "success", message: "Ação registrada no histórico do caso." };
+  } catch (error) {
+    console.error("Falha ao registrar ação do caso", error);
+    return { status: "error", message: "Não foi possível concluir a ação. Confira o histórico e o acordo antes de tentar novamente." };
+  }
 }

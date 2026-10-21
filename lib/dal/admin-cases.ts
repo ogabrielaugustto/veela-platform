@@ -202,6 +202,7 @@ type CaseEventRow = {
   notes: string | null;
   communication_subject: string | null;
   communication_body_snapshot: string | null;
+  metadata: Record<string, unknown>;
   occurred_at: string;
   created_at: string;
 };
@@ -374,6 +375,7 @@ export type AdminCaseWorkflowEvent = {
   notes: string | null;
   communicationSubject: string | null;
   communicationBody: string | null;
+  pendingCommunication: { action: "negotiation" | "collections"; to: string } | null;
   actorName: string | null;
   actorEmail: string | null;
   occurredAt: string;
@@ -1083,6 +1085,8 @@ function buildCaseWorkflowState(params: {
       notes: event.notes,
       communicationSubject: event.communication_subject,
       communicationBody: event.communication_body_snapshot,
+      pendingCommunication: event.metadata?.sendStatus === "pending" && (event.metadata.actionKind === "negotiation" || event.metadata.actionKind === "collections")
+        ? { action: event.metadata.actionKind, to: typeof event.metadata.emailTo === "string" ? event.metadata.emailTo : "" } : null,
       actorName: actor?.full_name ?? actor?.email ?? null,
       actorEmail: actor?.email ?? null,
       occurredAt: event.occurred_at,
@@ -1100,6 +1104,7 @@ function buildCaseWorkflowState(params: {
         notes: action.notes,
         communicationSubject: null,
         communicationBody: null,
+        pendingCommunication: null,
         actorName: action.actorName,
         actorEmail: action.actorEmail,
         occurredAt: action.createdAt,
@@ -1260,7 +1265,7 @@ async function buildAdminCases(filters?: {
     supabase
       .from("case_events")
       .select(
-        "id, organization_id, case_public_id, workflow_id, detection_id, user_id, event_kind, direction, title, body_snapshot, notes, communication_subject, communication_body_snapshot, occurred_at, created_at",
+        "id, organization_id, case_public_id, workflow_id, detection_id, user_id, event_kind, direction, title, body_snapshot, notes, communication_subject, communication_body_snapshot, metadata, occurred_at, created_at",
       )
       .in("organization_id", organizationIds)
       .in("case_public_id", casePublicIds)

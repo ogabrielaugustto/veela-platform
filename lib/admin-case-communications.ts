@@ -12,6 +12,8 @@ export const ADMIN_CASE_COMMUNICATION_ACTIONS = [
   "c1",
   "c1p",
   "c2",
+  "negotiation",
+  "collections",
 ] as const satisfies readonly AdminCaseActionKind[];
 
 export type AdminCaseCommunicationActionKind =
@@ -48,6 +50,8 @@ const communicationKindByAction: Record<
   c1: "c1",
   c1p: "c1p",
   c2: "c2",
+  negotiation: "negotiation",
+  collections: "collections",
 };
 
 const attachmentKindOrder = ["rhf", "soa", "proofdata", "metadata"] as const;

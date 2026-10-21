@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { getAdminCaseDetails } from "@/lib/dal/admin-cases";
+import { validateCaseOpen } from "@/lib/admin-case-operational";
 import { requirePanelAccess } from "@/lib/auth";
 import {
   requestAdminCaseSra,
@@ -17,11 +19,6 @@ export type AdminCaseSraActionState = {
   status: "idle" | "success" | "error";
   message: string;
   fieldErrors?: Record<string, string[]>;
-};
-
-export const initialAdminCaseSraActionState: AdminCaseSraActionState = {
-  status: "idle",
-  message: "",
 };
 
 function stringValue(formData: FormData, name: string) {
@@ -77,6 +74,12 @@ export async function requestAdminCaseSraAction(
 
   try {
     const auth = await requirePanelAccess("admin");
+    const adminCase = await getAdminCaseDetails(contextResult.data.organizationId, contextResult.data.casePublicId);
+    if (!adminCase || adminCase.organization.id !== contextResult.data.organizationId) {
+      return { status: "error", message: "Caso não encontrado ou acesso negado." };
+    }
+    const closedError = validateCaseOpen(adminCase.workflow.stage, adminCase.status);
+    if (closedError) return { status: "error", message: closedError };
     const result = await requestAdminCaseSra({
       ...contextResult.data,
       userId: auth.userId,

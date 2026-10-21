@@ -157,7 +157,7 @@ test("enables communication actions and the integrated SRA action", () => {
     "c1",
     "c1p",
     "c2",
-    "register_sra",
+    "register_sra", "follow_up", "call", "internal_note", "register_payment", "legal", "close_resolved", "negotiation", "collections",
   ]);
 
   for (const action of Object.keys(workflow.ADMIN_CASE_ACTION_LABELS)) {

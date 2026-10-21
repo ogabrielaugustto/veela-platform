@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { initialAdminCaseCommunicationState } from "@/lib/admin-case-action-state";
+
+import { useActionState, useEffect, useState } from "react";
 import {
   ArrowLeftIcon,
   CheckCircle2Icon,
@@ -11,7 +13,6 @@ import {
 } from "lucide-react";
 import {
   executeAdminCaseCommunication,
-  initialAdminCaseCommunicationState,
 } from "@/app/actions/admin-case-communications";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,20 @@ export function AdminCaseCommunicationDialog({
   const [body, setBody] = useState(draft.body);
   const [notes, setNotes] = useState("");
   const [confirmed, setConfirmed] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [operationId, setOperationId] = useState("");
+  const financial = draft.actionKind === "negotiation" || draft.actionKind === "collections";
+  const operationKey = `case-email:${organizationId}:${casePublicId}:${draft.actionKind}`;
+  useEffect(() => {
+    if (!financial) return;
+    const saved = sessionStorage.getItem(operationKey);
+    if (!saved) return;
+    try {
+      const item = JSON.parse(saved) as { id: string; to: string; subject: string; body: string; notes: string; amount: string };
+      const timer = window.setTimeout(() => { setOperationId(item.id); setTo(item.to); setSubject(item.subject); setBody(item.body); setNotes(item.notes); setAmount(item.amount); }, 0);
+      return () => window.clearTimeout(timer);
+    } catch { sessionStorage.removeItem(operationKey); }
+  }, [financial, operationKey]);
   const [state, formAction, pending] = useActionState(
     executeAdminCaseCommunication,
     initialAdminCaseCommunicationState,
@@ -79,7 +94,7 @@ export function AdminCaseCommunicationDialog({
   const availableAttachments = attachments.filter((attachment) => attachment.available);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(nextOpen) => { if (!nextOpen && state.status === "success" && financial) sessionStorage.removeItem(operationKey); onOpenChange(nextOpen); }}>
       <DialogContent className="max-h-[calc(100svh-2rem)] overflow-y-auto sm:max-w-3xl">
         <form action={formAction} className="grid gap-5">
           <DialogHeader>
@@ -102,6 +117,7 @@ export function AdminCaseCommunicationDialog({
           <input name="organizationId" type="hidden" value={organizationId} />
           <input name="casePublicId" type="hidden" value={casePublicId} />
           <input name="actionKind" type="hidden" value={draft.actionKind} />
+          {financial ? <><input name="operationId" type="hidden" value={operationId} /><input name="proposedAmount" type="hidden" value={amount} /></> : null}
           <input name="confirmed" type="hidden" value={confirmed ? "true" : "false"} />
           {step === "confirm" ? (
             <>
@@ -114,6 +130,7 @@ export function AdminCaseCommunicationDialog({
 
           {step === "edit" ? (
             <div className="grid gap-4">
+              {draft.actionKind === "negotiation" ? <label className="grid gap-2 text-sm font-medium">Valor da proposta (R$)<Input inputMode="decimal" value={amount} onChange={(event) => { const next = event.target.value; setBody((current) => current.replace(amount ? `R$ ${amount}` : "valor a definir", next ? `R$ ${next}` : "valor a definir")); setAmount(next); }} placeholder="1500,00" required /></label> : null}
               <label className="grid gap-2 text-sm font-medium">
                 Destinatário
                 <Input
@@ -203,6 +220,7 @@ export function AdminCaseCommunicationDialog({
             <div className="grid gap-4">
               <section className="rounded-lg border border-border">
                 <div className="grid gap-3 border-b border-border p-4 sm:grid-cols-2">
+                  {draft.actionKind === "negotiation" ? <div><p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Valor da proposta</p><p className="mt-1 text-sm font-medium">R$ {amount}</p></div> : null}
                   <div>
                     <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
                       Para
@@ -268,7 +286,7 @@ export function AdminCaseCommunicationDialog({
 
           <DialogFooter>
             {state.status === "success" ? (
-              <Button type="button" onClick={() => onOpenChange(false)}>
+              <Button type="button" onClick={() => { if (financial) sessionStorage.removeItem(operationKey); onOpenChange(false); }}>
                 Fechar
               </Button>
             ) : step === "edit" ? (
@@ -277,9 +295,14 @@ export function AdminCaseCommunicationDialog({
                   Cancelar
                 </Button>
                 <Button
-                  disabled={!to.trim() || !subject.trim() || !body.trim()}
+                  disabled={!to.trim() || !subject.trim() || !body.trim() || (draft.actionKind === "negotiation" && !amount.trim())}
                   type="button"
                   onClick={() => {
+                    if (financial) {
+                      const id = operationId || crypto.randomUUID();
+                      sessionStorage.setItem(operationKey, JSON.stringify({ id, to, subject, body, notes, amount }));
+                      setOperationId(id);
+                    }
                     setConfirmed(false);
                     setStep("confirm");
                   }}
@@ -291,7 +314,7 @@ export function AdminCaseCommunicationDialog({
             ) : (
               <>
                 <Button
-                  disabled={pending}
+                  disabled={pending || Boolean(state.retryOnly)}
                   type="button"
                   variant="outline"
                   onClick={() => setStep("edit")}

@@ -269,3 +269,13 @@ test("extracts Clicksign envelope and document identifiers from nested webhook p
     documentId: "doc_456",
   });
 });
+
+test("reconciles only an existing completed SOA envelope and document", () => {
+  const { mapSoaProviderStatus } = representationDocuments;
+  assert.equal(mapSoaProviderStatus("closed", "closed"), "signed");
+  assert.equal(mapSoaProviderStatus("closed", "running"), null);
+  assert.equal(mapSoaProviderStatus("running", "closed"), null);
+  assert.equal(mapSoaProviderStatus("canceled", "canceled"), "cancelled");
+  assert.equal(mapSoaProviderStatus("running", "running"), null);
+  assert.equal(mapSoaProviderStatus("closed", null), null);
+});

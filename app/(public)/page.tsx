@@ -1,626 +1,77 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRightIcon,
-  BadgeCheckIcon,
-  BellRingIcon,
-  CameraIcon,
-  CheckCircle2Icon,
-  CircleAlertIcon,
-  FileSearchIcon,
-  FolderKanbanIcon,
-  Layers3Icon,
-  LockKeyholeIcon,
-  SearchCheckIcon,
-  ShieldCheckIcon,
-  SparklesIcon,
-  UploadCloudIcon,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowDownRight, ArrowRight, ArrowUpRight, Plus } from "lucide-react";
 import { formatPlanPrice } from "@/lib/billing/plans";
 import { listBillingPlansFromDatabase } from "@/lib/dal/billing";
-import {
-  homeAudienceItems,
-  homeBenefitCards,
-  homeFaqItems,
-  homeHero,
-  homeHeroHighlights,
-  homeProblemPoints,
-  homeProductRows,
-  homeProductStats,
-  homeTrustItems,
-  homeWorkflowSteps,
-} from "@/lib/marketing/home-page-content";
 
 export const metadata: Metadata = {
-  title: "Monitoramento de imagens com revisão humana",
-  description:
-    "Monitore onde suas imagens aparecem, revise possíveis usos com contexto e conte com apoio humano para proteger suas criações.",
+  title: "Suas imagens merecem ser vistas. E respeitadas.",
+  description: "Acompanhe onde suas imagens aparecem na web, revise ocorrências e conte com a Veela quando identificar um uso não autorizado.",
 };
 
 export const dynamic = "force-dynamic";
 
-const benefitIcons = [
-  SearchCheckIcon,
-  ShieldCheckIcon,
-  FolderKanbanIcon,
-  BellRingIcon,
+const steps = [
+  { number: "01", title: "Adicione suas imagens", copy: "Reúna no painel as imagens que você quer acompanhar." },
+  { number: "02", title: "Acompanhe as ocorrências", copy: "Veja onde elas foram encontradas e consulte o contexto disponível." },
+  { number: "03", title: "Você decide", copy: "Reconheça usos autorizados ou sinalize os que precisam de atenção." },
+  { number: "04", title: "Conte com a Veela", copy: "Usos não autorizados são encaminhados para acompanhamento da nossa equipe." },
 ];
 
-const trustIcons = [ShieldCheckIcon, LockKeyholeIcon, BadgeCheckIcon];
+const faqs = [
+  { question: "Toda ocorrência encontrada é uma infração?", answer: "Não. Uma ocorrência indica que a imagem foi encontrada. Você revisa o contexto e informa se o uso é autorizado, deve ser ignorado ou não foi autorizado." },
+  { question: "O que acontece quando identifico um uso não autorizado?", answer: "A ocorrência é encaminhada como caso para a equipe Veela, que acompanha os próximos passos." },
+  { question: "Para quem a Veela foi feita?", answer: "Para fotógrafos, criadores, estúdios, agências e marcas que desejam acompanhar o uso de suas imagens." },
+  { question: "Como começo?", answer: "Crie sua conta, escolha um plano disponível e cadastre suas imagens no painel." },
+];
+
+const primaryLink = "inline-flex items-center justify-center gap-8 rounded-full bg-[#293e51] px-6 py-4 text-sm font-semibold text-white transition hover:bg-[#405b70]";
+const eyebrow = "text-[11px] font-semibold uppercase tracking-[0.2em]";
 
 export default async function LandingPage() {
   const pricingPlans = await listBillingPlansFromDatabase();
 
   return (
-    <div className="overflow-hidden">
-      <section className="relative border-b bg-[linear-gradient(180deg,#f5eeea_0%,#ffffff_72%)]">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_16%,rgba(205,217,230,0.55),transparent_30%),radial-gradient(circle_at_82%_12%,rgba(86,124,141,0.10),transparent_26%)]" />
-        <div className="relative mx-auto grid w-full max-w-7xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,1.08fr)] lg:items-center lg:px-8 lg:py-20">
-          <div className="space-y-8">
-            <div className="inline-flex max-w-full items-center gap-2 rounded-md border border-primary/15 bg-white/80 px-3 py-2 text-sm font-medium text-primary shadow-sm shadow-primary/5">
-              <BadgeCheckIcon className="size-4 shrink-0" />
-              <span className="truncate">{homeHero.eyebrow}</span>
+    <div className="overflow-hidden bg-[#f7f6f2] text-[#293e51]">
+      <section className="mx-auto max-w-[1440px] px-5 pb-12 pt-12 sm:px-8 lg:px-12 lg:pb-20 lg:pt-20">
+        <div className="grid items-end gap-10 lg:grid-cols-[1fr_0.85fr] lg:gap-16">
+          <div className="max-w-3xl pb-3">
+            <p className={`${eyebrow} mb-7 flex items-center gap-3`}><span className="h-2 w-2 rounded-full bg-[#e57857]" /> Monitoramento de imagens · revisão humana</p>
+            <h1 className="font-heading text-[clamp(3.3rem,7vw,7rem)] font-medium leading-[0.98] tracking-[-0.065em]">Suas imagens vão longe.<br /><span className="text-[#8c9b9e]">Acompanhe até onde.</span></h1>
+            <p className="mt-8 max-w-lg text-base leading-7 text-[#5c6d75] sm:text-lg">Descubra onde suas imagens aparecem na web, identifique usos que você não autorizou e conte com a Veela para os próximos passos.</p>
+            <div className="mt-8 flex flex-wrap items-center gap-6">
+              <Link href="/auth/register" className={primaryLink}>Começar teste grátis <ArrowRight className="size-4" /></Link>
+              <Link href="#como-funciona" className="inline-flex items-center gap-2 text-sm font-semibold underline decoration-[#b6c0bd] underline-offset-8">Conheça a Veela <ArrowDownRight className="size-4" /></Link>
             </div>
-
-            <div className="space-y-5">
-              <h1 className="max-w-4xl font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-                {homeHero.headline}
-              </h1>
-              <p className="max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-                {homeHero.description}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <Button asChild className="h-11 w-full px-5 sm:w-auto" size="lg">
-                <Link href={homeHero.primaryCta.href}>
-                  {homeHero.primaryCta.label}
-                  <ArrowRightIcon className="size-4 shrink-0" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                className="h-11 w-full bg-white/80 px-5 sm:w-auto"
-                size="lg"
-                variant="outline"
-              >
-                <Link href={homeHero.secondaryCta.href}>
-                  {homeHero.secondaryCta.label}
-                </Link>
-              </Button>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-3">
-              {homeHeroHighlights.map((item) => (
-                <div
-                  key={item}
-                  className="flex min-h-20 items-start gap-3 rounded-md border bg-white/78 p-3 shadow-sm shadow-primary/5"
-                >
-                  <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-primary" />
-                  <p className="text-sm leading-5 text-foreground/80">{item}</p>
-                </div>
-              ))}
-            </div>
+            <p className="mt-8 text-xs text-[#778786]">Para quem cria, licencia e cuida de imagens.</p>
           </div>
-
-          <ProductMockup />
-        </div>
-      </section>
-
-      <section
-        id="problema"
-        className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-[0.74fr_1fr] lg:px-8 lg:py-20"
-      >
-        <div className="space-y-4">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
-            O problema
-          </p>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground lg:text-5xl">
-            O uso indevido quase nunca chega organizado.
-          </h2>
-          <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-            Ele aparece em links soltos, prints fora de contexto e buscas manuais
-            que consomem tempo. A plataforma organiza esse sinal antes de
-            qualquer decisão.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {homeProblemPoints.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-md border bg-white p-5 shadow-sm shadow-primary/5"
-            >
-              <CircleAlertIcon className="size-5 text-primary" />
-              <h3 className="mt-5 font-heading text-lg font-semibold">
-                {item.title}
-              </h3>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section
-        id="como-funciona"
-        className="border-y bg-[#2e4156] text-white"
-      >
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.86fr_1.14fr] lg:px-8 lg:py-20">
-          <div className="space-y-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#cdd9e6]">
-              Como funciona
-            </p>
-            <h2 className="font-heading text-3xl font-semibold tracking-tight lg:text-5xl">
-              Do upload ao encaminhamento, sem transformar ocorrência em certeza jurídica.
-            </h2>
-            <p className="max-w-xl text-sm leading-7 text-white/70 sm:text-base">
-              O fluxo separa monitoramento, revisão e encaminhamento. O cliente
-              entende o que foi encontrado, valida o uso e aciona a Veela quando
-              existe uso não autorizado.
-            </p>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            {homeWorkflowSteps.map((step) => (
-              <div
-                key={step.label}
-                className="rounded-md border border-white/10 bg-white/[0.06] p-5"
-              >
-                <span className="inline-flex size-10 items-center justify-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">
-                  {step.label}
-                </span>
-                <h3 className="mt-5 font-heading text-xl font-semibold text-white">
-                  {step.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-white/70">
-                  {step.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-20">
-        <div className="order-2 lg:order-1">
-          <ProductDetailPanel />
-        </div>
-
-        <div className="order-1 space-y-5 lg:order-2">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
-            Produto
-          </p>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground lg:text-5xl">
-            O painel mostra o que precisa de atenção, não só uma lista de links.
-          </h2>
-          <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-            A experiência foi desenhada para leitura operacional: status, fonte,
-            evidência e próximo passo ficam próximos para reduzir ruído e acelerar
-            a revisão.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <ValuePill icon={UploadCloudIcon} text="Upload e organização de ativos" />
-            <ValuePill icon={FileSearchIcon} text="Ocorrências com evidência" />
-            <ValuePill icon={Layers3Icon} text="Histórico por organização" />
-            <ValuePill icon={SparklesIcon} text="Apoio humano no encaminhamento" />
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#f5eeea]">
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-20">
-          <div className="space-y-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
-              Benefícios
-            </p>
-            <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground lg:text-5xl">
-              O ganho é sair da suspeita solta para uma rotina de revisão.
-            </h2>
-            <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-              A plataforma não promete mágica. Ela reduz atrito operacional para
-              que você veja, compare e decida com mais contexto.
-            </p>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            {homeBenefitCards.map((item, index) => {
-              const Icon = benefitIcons[index] ?? CheckCircle2Icon;
-
-              return (
-                <div
-                  key={item.title}
-                  className="rounded-md border bg-white p-5 shadow-sm shadow-primary/5"
-                >
-                  <span className="flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary">
-                    <Icon className="size-5" />
-                  </span>
-                  <h3 className="mt-5 font-heading text-xl font-semibold">
-                    {item.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                    {item.description}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1fr_0.86fr] lg:items-start lg:px-8 lg:py-20">
-        <div className="space-y-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
-            Para quem é
-          </p>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground lg:text-5xl">
-            Feito para quem trata imagem como ativo, não como arquivo esquecido.
-          </h2>
-          <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-            O melhor encaixe é para quem já tem acervo autoral, licenciado ou
-            comercial e precisa entender onde esse material aparece depois da
-            entrega.
-          </p>
-        </div>
-
-        <div className="rounded-md border bg-white p-5 shadow-sm shadow-primary/5">
-          <div className="flex items-center gap-3 border-b pb-4">
-            <CameraIcon className="size-5 text-primary" />
-            <p className="font-heading text-lg font-semibold">Perfis com fit</p>
-          </div>
-          <div className="mt-4 space-y-3">
-            {homeAudienceItems.map((item) => (
-              <div key={item} className="flex items-start gap-3">
-                <CheckCircle2Icon className="mt-0.5 size-4 shrink-0 text-primary" />
-                <p className="text-sm leading-6 text-foreground/80">{item}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="planos" className="border-y bg-[#2e4156] text-white">
-        <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-          <div className="max-w-3xl space-y-4">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#cdd9e6]">
-              Planos
-            </p>
-            <h2 className="font-heading text-3xl font-semibold tracking-tight lg:text-5xl">
-              Comece pelo teste grátis. Fale com a Veela se sua operação exigir mais contexto.
-            </h2>
-            <p className="text-sm leading-7 text-white/70 sm:text-base">
-              Os planos abaixo vêm do cadastro real do sistema. Você pode começar
-              pelo cadastro direto ou abrir uma conversa quando o volume e o
-              risco pedirem uma avaliação mais próxima.
-            </p>
-          </div>
-
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {pricingPlans.map((plan) => (
-              <div
-                key={plan.code}
-                className="flex h-full flex-col rounded-md border border-white/10 bg-white/[0.06] p-5"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="font-heading text-2xl font-semibold text-white">
-                      {plan.name}
-                    </h3>
-                    <p className="mt-3 text-sm leading-6 text-white/65">
-                      {plan.description}
-                    </p>
-                  </div>
-                  {plan.isComingSoon ? (
-                    <span className="rounded-md border border-white/15 px-2.5 py-1 text-xs text-white/65">
-                      Em breve
-                    </span>
-                  ) : null}
-                </div>
-
-                <div className="mt-8">
-                  <p className="font-heading text-4xl font-semibold tracking-tight">
-                    {formatPlanPrice(plan.priceCents)}
-                  </p>
-                  {!plan.isComingSoon ? (
-                    <p className="mt-1 text-sm text-white/55">por mês</p>
-                  ) : null}
-                </div>
-
-                <p className="mt-6 flex-1 text-sm leading-7 text-white/65">
-                  {plan.code === "custom"
-                    ? "Para operações com volume, risco ou desenho comercial específico."
-                    : "Inclui teste grátis, painel de monitoramento, ocorrências e histórico centralizado."}
-                </p>
-
-                {plan.isSelectable ? (
-                  <Button asChild className="mt-6 h-11 w-full" size="lg">
-                    <Link href={`/auth/register?plan=${plan.code}`}>
-                      Começar teste grátis
-                      <ArrowRightIcon className="size-4" />
-                    </Link>
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    className="mt-6 h-11 w-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-                    size="lg"
-                    variant="outline"
-                  >
-                    <Link href="/contato">Falar com a Veela</Link>
-                  </Button>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="seguranca"
-        className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.82fr_1.18fr] lg:px-8 lg:py-20"
-      >
-        <div className="space-y-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
-            Segurança e confiança
-          </p>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground lg:text-5xl">
-            Confiança aqui vem de processo claro, não de selo inventado.
-          </h2>
-          <p className="max-w-xl text-sm leading-7 text-muted-foreground sm:text-base">
-            A Veela comunica apenas o que sustenta na operação: privacidade
-            acessível, acesso autenticado, separação de papéis e revisão humana
-            antes de tratar uma ocorrência como caso.
-          </p>
-        </div>
-
-        <div className="grid gap-4 md:grid-cols-3">
-          {homeTrustItems.map((item, index) => {
-            const Icon = trustIcons[index] ?? ShieldCheckIcon;
-
-            return (
-              <div
-                key={item.title}
-                className="rounded-md border bg-white p-5 shadow-sm shadow-primary/5"
-              >
-                <Icon className="size-5 text-primary" />
-                <h3 className="mt-5 font-heading text-lg font-semibold">
-                  {item.title}
-                </h3>
-                <p className="mt-3 text-sm leading-7 text-muted-foreground">
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section id="faq" className="bg-[#f5eeea]">
-        <div className="mx-auto grid w-full max-w-7xl gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[0.74fr_1fr] lg:px-8 lg:py-20">
-          <div className="space-y-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
-              Perguntas frequentes
-            </p>
-            <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground lg:text-5xl">
-              Respostas diretas para decidir se faz sentido começar agora.
-            </h2>
-          </div>
-
-          <div className="space-y-3">
-            {homeFaqItems.map((item) => (
-              <details
-                key={item.question}
-                className="group rounded-md border bg-white p-5 shadow-sm shadow-primary/5"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-heading text-lg font-semibold">
-                  {item.question}
-                  <ArrowRightIcon className="size-4 shrink-0 transition group-open:rotate-90" />
-                </summary>
-                <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                  {item.answer}
-                </p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-        <div className="grid gap-8 rounded-md border bg-[#cdd9e6] p-6 shadow-sm lg:grid-cols-[1fr_auto] lg:items-center lg:p-8">
-          <div className="space-y-3">
-            <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
-              Comece a monitorar suas imagens com mais clareza.
-            </h2>
-            <p className="max-w-2xl text-sm leading-7 text-muted-foreground sm:text-base">
-              Crie sua conta, cadastre seus ativos e veja como a Veela organiza o
-              caminho entre ocorrência encontrada, revisão humana e encaminhamento.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button asChild className="h-11 w-full px-5 sm:w-auto" size="lg">
-              <Link href="/auth/register">
-                Começar teste grátis
-                <ArrowRightIcon className="size-4" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              className="h-11 w-full bg-white/80 px-5 sm:w-auto"
-              size="lg"
-              variant="outline"
-            >
-              <Link href="/contato">Falar com a Veela</Link>
-            </Button>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function ProductMockup() {
-  return (
-    <div className="relative">
-      <div className="absolute -inset-6 rounded-[24px] bg-primary/10 blur-3xl" />
-      <div className="relative overflow-hidden rounded-md border border-white/65 bg-slate-950 shadow-[0_28px_90px_rgba(15,23,42,0.26)]">
-        <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.04] px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-red-300" />
-            <span className="size-2.5 rounded-full bg-amber-300" />
-            <span className="size-2.5 rounded-full bg-emerald-300" />
-          </div>
-          <p className="text-xs font-medium uppercase tracking-[0.24em] text-white/40">
-            Exemplo de painel
-          </p>
-        </div>
-
-        <div className="grid gap-4 p-4 sm:p-5">
-          <div className="grid gap-3 sm:grid-cols-3">
-            {homeProductStats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-md border border-white/10 bg-white/[0.06] p-4"
-              >
-                <p className="text-2xl font-semibold tracking-tight text-white">
-                  {stat.value}
-                </p>
-                <p className="mt-1 text-xs leading-5 text-white/50">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="rounded-md border border-white/10 bg-white/[0.04]">
-            <div className="grid grid-cols-[1fr_auto] gap-4 border-b border-white/10 px-4 py-3">
-              <p className="text-sm font-medium text-white">Ocorrências recentes</p>
-          <span className="rounded-md bg-[#567c8d]/35 px-2 py-1 text-xs text-[#cdd9e6]">
-                Revisão ativa
-              </span>
-            </div>
-            <div className="divide-y divide-white/10">
-              {homeProductRows.map((row) => (
-                <div
-                  key={`${row.asset}-${row.source}`}
-                  className="grid gap-3 px-4 py-4 sm:grid-cols-[1.1fr_0.9fr]"
-                >
-                  <div>
-                    <p className="text-sm font-medium text-white">{row.asset}</p>
-                    <p className="mt-1 text-xs text-white/45">{row.source}</p>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-                    <span className="rounded-md border border-white/10 px-2.5 py-1 text-xs text-white/70">
-                      {row.status}
-                    </span>
-                    <span className="rounded-md bg-white/10 px-2.5 py-1 text-xs text-white/60">
-                      {row.evidence}
-                    </span>
-                  </div>
-                </div>
-              ))}
+          <div className="relative min-h-[410px] overflow-hidden bg-[#d7d8d0] sm:min-h-[530px]" role="img" aria-label="Fotografia editorial de montanhas, exemplo de imagem monitorada" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1400&q=85')", backgroundPosition: "center", backgroundSize: "cover" }}>
+            <div className="absolute inset-x-5 top-5 flex justify-between text-[10px] font-semibold uppercase tracking-[0.18em] text-white"><span>Seu trabalho, no mundo</span><span>01 / 03</span></div>
+            <div className="absolute bottom-5 left-5 right-5 bg-[#f9f8f4] p-5 shadow-xl sm:left-auto sm:w-72">
+              <div className="flex items-center justify-between border-b border-[#d9dfdc] pb-3"><span className={`${eyebrow} text-[#71827f]`}>Exemplo ilustrativo</span><span className="h-2 w-2 rounded-full bg-[#e57857]" /></div>
+              <p className="mt-4 font-heading text-xl">Uma imagem encontrada.</p><p className="mt-1 text-sm text-[#71827f]">Esse uso foi autorizado?</p>
+              <div className="mt-5 flex gap-2 text-xs"><span className="rounded-full border border-[#b7c5c0] px-3 py-2">Sim, autorizado</span><span className="rounded-full bg-[#293e51] px-3 py-2 text-white">Não reconheço</span></div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
+        <div className="mt-6 flex flex-wrap justify-between gap-3 border-b border-[#d4dad6] pb-5 text-xs text-[#75847f]"><span>Visibilidade para o seu trabalho.</span><span>Imagem ilustrativa · fotografia via Unsplash</span></div>
+      </section>
 
-function ProductDetailPanel() {
-  return (
-    <div className="overflow-hidden rounded-md border bg-white shadow-sm shadow-primary/10">
-      <div className="border-b bg-[#f5eeea] px-5 py-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="font-heading text-lg font-semibold">Revisão de ocorrência</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Campanha editorial - Look 04
-            </p>
-          </div>
-          <span className="rounded-md bg-primary/10 px-3 py-1.5 text-sm font-medium text-primary">
-            Aguardando revisão
-          </span>
-        </div>
-      </div>
+      <section id="problema" className="mx-auto grid max-w-[1440px] gap-8 px-5 py-16 sm:px-8 lg:grid-cols-[0.45fr_1fr] lg:px-12 lg:py-28">
+        <p className={`${eyebrow} text-[#8a9994]`}>01 / O desafio</p>
+        <div><h2 className="max-w-4xl font-heading text-4xl font-medium leading-[1.08] tracking-[-0.045em] sm:text-5xl lg:text-6xl">Você criou. Publicou. <span className="text-[#a3aeaa]">E depois?</span></h2><div className="mt-10 grid gap-8 border-t border-[#cfd7d2] pt-7 md:grid-cols-3"><p className="text-lg leading-7">Uma imagem pode aparecer em muitos lugares.</p><p className="text-lg leading-7">Nem todo uso vem com um aviso.</p><p className="text-lg leading-7">Acompanhar tudo manualmente toma tempo.</p></div></div>
+      </section>
 
-      <div className="grid gap-0 md:grid-cols-[0.92fr_1.08fr]">
-        <div className="border-b bg-slate-950 p-5 text-white md:border-b-0 md:border-r">
-          <div className="aspect-[4/3] rounded-md border border-white/10 bg-[linear-gradient(135deg,rgba(86,124,141,0.72),rgba(46,65,86,0.95)),radial-gradient(circle_at_70%_22%,rgba(255,255,255,0.22),transparent_24%)] p-4">
-            <div className="flex h-full flex-col justify-between">
-              <div className="flex justify-between gap-3">
-                <span className="rounded-md bg-white/12 px-2.5 py-1 text-xs">
-                  Ativo original
-                </span>
-                <CameraIcon className="size-5 text-white/70" />
-              </div>
-              <div>
-                <p className="font-heading text-2xl font-semibold">
-                  Imagem #2048
-                </p>
-                <p className="mt-2 max-w-48 text-sm leading-6 text-white/65">
-                  Referência visual protegida no acervo do cliente.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <section className="bg-[#dce5df] px-5 py-16 sm:px-8 lg:px-12 lg:py-24"><div className="mx-auto grid max-w-[1344px] gap-10 md:grid-cols-[0.7fr_1fr] md:items-center"><div><p className={`${eyebrow} text-[#6e837b]`}>O valor da criação</p><p className="mt-5 font-heading text-[clamp(5rem,12vw,10rem)] leading-none tracking-[-0.08em]">93%</p></div><div><p className="max-w-2xl font-heading text-2xl leading-tight tracking-tight sm:text-4xl">dos europeus consideram importante que criadores possam proteger seus direitos e receber pelo seu trabalho.</p><a href="https://www.euipo.europa.eu/en/publications/ip-perception-study-2023" target="_blank" rel="noreferrer" className="mt-7 inline-flex items-center gap-2 border-b border-current pb-1 text-xs font-semibold">Fonte: EUIPO, estudo de percepção de propriedade intelectual, 2023 <ArrowUpRight className="size-3" /></a></div></div></section>
 
-        <div className="space-y-4 p-5">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <MiniMetric label="Fonte" value="Blog comercial" />
-            <MiniMetric label="Evidência" value="Screenshot capturado" />
-            <MiniMetric label="Status" value="Aguardando decisão" />
-            <MiniMetric label="Próximo passo" value="Validar autorização" />
-          </div>
+      <section id="como-funciona" className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-32"><div className="grid gap-6 lg:grid-cols-[0.45fr_1fr]"><p className={`${eyebrow} text-[#8a9994]`}>02 / Como funciona</p><div><h2 className="max-w-3xl font-heading text-4xl font-medium leading-[1.08] tracking-[-0.05em] sm:text-6xl">Mais clareza sobre onde seu trabalho aparece.</h2><p className="mt-6 max-w-lg text-base leading-7 text-[#708078]">Da imagem à decisão, tudo em um só lugar.</p></div></div><div className="mt-14 grid border-t border-[#cfd7d2] md:grid-cols-2 lg:grid-cols-4">{steps.map((step) => <div key={step.number} className="border-b border-[#cfd7d2] py-7 pr-8 lg:border-b-0 lg:border-r lg:pl-7 lg:first:pl-0 lg:last:border-r-0"><span className="text-xs text-[#99aaa1]">{step.number} /</span><h3 className="mt-10 font-heading text-2xl tracking-tight">{step.title}</h3><p className="mt-3 max-w-xs text-sm leading-6 text-[#718078]">{step.copy}</p></div>)}</div></section>
 
-          <div className="rounded-md border bg-[#f5eeea] p-4">
-            <div className="flex items-start gap-3">
-              <SearchCheckIcon className="mt-0.5 size-5 shrink-0 text-primary" />
-              <div>
-                <p className="font-medium">Leitura operacional</p>
-                <p className="mt-2 text-sm leading-7 text-muted-foreground">
-                  A ocorrência fica pronta para comparação, revisão do contexto e
-                  decisão: autorizado, ignorado ou uso não autorizado.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+      <section className="bg-[#293e51] px-5 py-20 text-[#f5f5ef] sm:px-8 lg:px-12 lg:py-28"><div className="mx-auto grid max-w-[1344px] gap-12 lg:grid-cols-2 lg:items-center"><div className="relative min-h-[380px] bg-[#71847c] sm:min-h-[500px]" role="img" aria-label="Fotografia editorial de uma câmera, representando o trabalho de criadores" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1200&q=85')", backgroundPosition: "center", backgroundSize: "cover" }}><span className="absolute bottom-5 left-5 bg-[#f7f6f2] px-4 py-3 text-xs font-semibold text-[#293e51]">Criar é só o começo. ↗</span></div><div className="lg:pl-12"><p className={`${eyebrow} text-[#a9bdb7]`}>03 / Feita para quem cria</p><h2 className="mt-7 font-heading text-4xl font-medium leading-[1.08] tracking-[-0.05em] sm:text-6xl">Seu olhar tem valor. Seu tempo também.</h2><p className="mt-7 max-w-md text-base leading-7 text-white/65">Fotógrafos, estúdios, agências e marcas: acompanhem seus acervos sem transformar cada busca em uma nova jornada.</p><div className="mt-10 flex flex-wrap gap-2 text-xs text-white/80">{["Fotografia", "Campanhas", "Produtos", "Conteúdo autoral"].map(item => <span key={item} className="rounded-full border border-white/25 px-4 py-2">{item}</span>)}</div></div></div></section>
 
-function ValuePill({
-  icon: Icon,
-  text,
-}: Readonly<{
-  icon: typeof UploadCloudIcon;
-  text: string;
-}>) {
-  return (
-    <div className="flex items-center gap-3 rounded-md border bg-white px-4 py-3 shadow-sm shadow-primary/5">
-      <Icon className="size-4 shrink-0 text-primary" />
-      <p className="text-sm font-medium text-foreground/85">{text}</p>
-    </div>
-  );
-}
+      <section id="planos" className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28"><div className="flex flex-wrap items-end justify-between gap-6"><div><p className={`${eyebrow} text-[#8a9994]`}>04 / Planos</p><h2 className="mt-5 font-heading text-4xl font-medium tracking-[-0.05em] sm:text-6xl">Comece pelo seu acervo.</h2></div><Link href="/contato" className="inline-flex items-center gap-2 border-b border-current pb-1 text-sm font-semibold">Precisa de algo diferente? Fale conosco <ArrowUpRight className="size-4" /></Link></div><div className="mt-12 grid border-t border-[#cfd7d2] md:grid-cols-3">{pricingPlans.map(plan => <div key={plan.code} className="flex flex-col border-b border-[#cfd7d2] py-8 pr-8 md:border-b-0 md:border-r md:pl-8 md:first:pl-0 md:last:border-r-0"><div className="flex justify-between gap-3"><h3 className="font-heading text-2xl">{plan.name}</h3>{plan.isComingSoon && <span className="text-xs text-[#718078]">Em breve</span>}</div><p className="mt-8 font-heading text-4xl tracking-tight">{formatPlanPrice(plan.priceCents)}</p>{!plan.isComingSoon && <p className="mt-1 text-xs text-[#718078]">por mês</p>}<p className="mt-5 flex-1 text-sm leading-6 text-[#718078]">{plan.description}</p><Link href={plan.isSelectable ? `/auth/register?plan=${plan.code}` : "/contato"} className="mt-8 inline-flex items-center justify-between border-b border-[#293e51] pb-3 text-sm font-semibold">{plan.isSelectable ? "Começar teste grátis" : "Falar com a Veela"}<ArrowUpRight className="size-4" /></Link></div>)}</div></section>
 
-function MiniMetric({
-  label,
-  value,
-}: Readonly<{
-  label: string;
-  value: string;
-}>) {
-  return (
-    <div className="rounded-md border bg-white p-3">
-      <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
-        {label}
-      </p>
-      <p className="mt-2 text-sm font-medium text-foreground">{value}</p>
+      <section id="faq" className="bg-[#eaece6] px-5 py-20 sm:px-8 lg:px-12 lg:py-28"><div className="mx-auto grid max-w-[1344px] gap-10 lg:grid-cols-[0.7fr_1fr]"><div><p className={`${eyebrow} text-[#8a9994]`}>05 / Perguntas frequentes</p><h2 className="mt-5 font-heading text-4xl font-medium tracking-[-0.05em] sm:text-5xl">Sem dúvidas,<br />mais clareza.</h2></div><div className="border-t border-[#bcc9c1]">{faqs.map(item => <details key={item.question} className="group border-b border-[#bcc9c1] py-6"><summary className="flex cursor-pointer list-none items-center justify-between gap-5 font-heading text-lg font-medium">{item.question}<Plus className="size-5 shrink-0 transition group-open:rotate-45" /></summary><p className="mt-4 max-w-xl text-sm leading-7 text-[#687a70]">{item.answer}</p></details>)}</div></div></section>
+      <section className="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-8 px-5 py-20 sm:px-8 lg:flex-row lg:items-end lg:px-12 lg:py-28"><div><p className={`${eyebrow} text-[#8a9994]`}>Seu trabalho merece atenção</p><h2 className="mt-5 max-w-3xl font-heading text-4xl font-medium leading-[1.05] tracking-[-0.05em] sm:text-6xl">Vamos acompanhar suas imagens?</h2></div><Link href="/auth/register" className={primaryLink}>Começar teste grátis <ArrowRight className="size-4" /></Link></section>
     </div>
   );
 }

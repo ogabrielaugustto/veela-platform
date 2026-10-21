@@ -608,3 +608,15 @@ export async function createClicksignSraEnvelope(
     },
   };
 }
+
+export async function getClicksignSoaStatus(input: { environment: ClicksignEnvironment; envelopeId: string; documentId: string }) {
+  const settings = getClicksignSettings();
+  if (settings.environment !== input.environment) {
+    throw new Error("O ambiente da Clicksign não corresponde ao documento. Entre em contato com o suporte.");
+  }
+  const [envelope, document] = await Promise.all([
+    clicksignFetch(`/envelopes/${encodeURIComponent(input.envelopeId)}`, settings),
+    clicksignFetch(`/envelopes/${encodeURIComponent(input.envelopeId)}/documents/${encodeURIComponent(input.documentId)}`, settings),
+  ]);
+  return { envelopeStatus: envelope.data?.attributes?.status, documentStatus: document.data?.attributes?.status };
+}

@@ -40,12 +40,14 @@ async function sendEmail({
   text,
   replyTo,
   attachments,
+  idempotencyKey,
 }: {
   to: string | string[];
   subject: string;
   html: string;
   text: string;
   replyTo?: string;
+  idempotencyKey?: string;
   attachments?: Array<{
     filename: string;
     content: Buffer;
@@ -65,7 +67,7 @@ async function sendEmail({
       content: attachment.content,
       content_type: attachment.contentType,
     })),
-  });
+  }, idempotencyKey ? { idempotencyKey } : undefined);
 
   if (error) {
     throw new Error(error.message);
@@ -178,6 +180,7 @@ export async function sendCaseCommunicationEmail({
   validationCode,
   replyTo,
   attachments,
+  idempotencyKey,
 }: {
   to: string;
   subject: string;
@@ -189,6 +192,7 @@ export async function sendCaseCommunicationEmail({
   validationUrl?: string | null;
   validationCode?: string | null;
   replyTo?: string | null;
+  idempotencyKey?: string;
   attachments?: Array<{
     filename: string;
     content: Buffer;
@@ -213,5 +217,6 @@ export async function sendCaseCommunicationEmail({
     text: content.text,
     replyTo: replyTo ?? undefined,
     attachments,
+    idempotencyKey,
   });
 }

@@ -761,3 +761,10 @@ export function extractClicksignWebhookOccurredAt(payload: unknown) {
     ["created_at"],
   ]);
 }
+
+/** Reconciliation requires both the envelope and its original document to be closed. */
+export function mapSoaProviderStatus(envelopeStatus: unknown, documentStatus: unknown): "signed" | "cancelled" | null {
+  if (envelopeStatus === "closed" && documentStatus === "closed") return "signed";
+  if (envelopeStatus === "canceled") return "cancelled";
+  return null;
+}
