@@ -1,3 +1,4 @@
+import { getPageEvidenceCoverage, hasCapturedScreenshot } from "@/lib/evidence-coverage";
 import "server-only";
 
 import { requirePanelAccess } from "@/lib/auth";
@@ -674,33 +675,6 @@ function comparePlacementsDesc(
 
 function pickEarliestIsoDate(left: string, right: string) {
   return new Date(left).getTime() <= new Date(right).getTime() ? left : right;
-}
-
-function getPageEvidenceCoverage(
-  placements: Array<Pick<AdminCasePlacement, "latestEvidence">>,
-): DetectionEvidenceCoverage {
-  const total = placements.length;
-  const capturedCount = placements.filter(
-    (placement) => placement.latestEvidence?.captureStatus === "captured",
-  ).length;
-  const hasPending = placements.some((placement) => {
-    const status = placement.latestEvidence?.captureStatus;
-    return !status || status === "pending" || status === "processing";
-  });
-
-  if (capturedCount === total) {
-    return "captured";
-  }
-
-  if (capturedCount > 0) {
-    return "partial";
-  }
-
-  if (hasPending) {
-    return "pending";
-  }
-
-  return "failed";
 }
 
 function getIncidentEvidenceCoverage(
@@ -1498,7 +1472,7 @@ async function buildAdminCases(filters?: {
             lastSeenAt: pageRepresentative.lastSeenAt,
             placementsCount: sortedPlacements.length,
             capturedEvidenceCount: sortedPlacements.filter(
-              (placement) => placement.latestEvidence?.captureStatus === "captured",
+              (placement) => hasCapturedScreenshot(placement.latestEvidence),
             ).length,
             evidenceCoverage,
             representativeDetectionId: pageRepresentative.id,
@@ -1593,7 +1567,7 @@ async function buildAdminCases(filters?: {
         pagesCount: pageMap.size,
         placementsCount: placements.length,
         capturedEvidenceCount: placements.filter(
-          (placement) => placement.latestEvidence?.captureStatus === "captured",
+          (placement) => hasCapturedScreenshot(placement.latestEvidence),
         ).length,
         siteSignals: buildCaseSiteSignals({
           siteSnapshots,

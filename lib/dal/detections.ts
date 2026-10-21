@@ -1,3 +1,4 @@
+import { getPageEvidenceCoverage, hasCapturedScreenshot } from "@/lib/evidence-coverage";
 import "server-only";
 
 import { notFound } from "next/navigation";
@@ -640,33 +641,6 @@ async function hydratePlacements(
     .sort(comparePlacementsDesc);
 }
 
-function getPageEvidenceCoverage(
-  placements: DetectionIncidentPlacementSummary[],
-): DetectionEvidenceCoverage {
-  const total = placements.length;
-  const capturedCount = placements.filter(
-    (placement) => placement.latestEvidence?.captureStatus === "captured",
-  ).length;
-  const hasPending = placements.some((placement) => {
-    const status = placement.latestEvidence?.captureStatus;
-    return !status || status === "pending" || status === "processing";
-  });
-
-  if (capturedCount === total) {
-    return "captured";
-  }
-
-  if (capturedCount > 0) {
-    return "partial";
-  }
-
-  if (hasPending) {
-    return "pending";
-  }
-
-  return "failed";
-}
-
 function getIncidentEvidenceCoverage(
   pages: DetectionIncidentPageGroup[],
 ): DetectionEvidenceCoverage {
@@ -768,7 +742,7 @@ function buildIncidentPageGroups(
         }),
       );
       const capturedEvidenceCount = placementSummaries.filter(
-        (placement) => placement.latestEvidence?.captureStatus === "captured",
+        (placement) => hasCapturedScreenshot(placement.latestEvidence),
       ).length;
 
       return {
@@ -817,7 +791,7 @@ function buildDetectionIncidents(
         representativePlacement.firstSeenAt,
       );
       const capturedEvidenceCount = sortedPlacements.filter(
-        (placement) => placement.latestEvidence?.captureStatus === "captured",
+        (placement) => hasCapturedScreenshot(placement.latestEvidence),
       ).length;
       const incidentStatus = resolveIncidentStatus(
         sortedPlacements.map((placement) => placement.status),
@@ -1106,7 +1080,7 @@ async function buildDetectionCases(filters?: {
         pagesCount: pages.length,
         placementsCount: placements.length,
         capturedEvidenceCount: placements.filter(
-          (placement) => placement.latestEvidence?.captureStatus === "captured",
+          (placement) => hasCapturedScreenshot(placement.latestEvidence),
         ).length,
         siteSignals: {
           cnpjCandidates: uniqueStrings(siteSnapshots.flatMap((snapshot) => snapshot.cnpjCandidates)),

@@ -143,9 +143,9 @@ export function formatEvidenceCoverage(status: string) {
 export function getEvidenceCoverageHelp(status: string) {
   switch (status as EvidenceCoverageStatus) {
     case "captured":
-      return "Cada página deste incidente já possui ao menos uma evidência visual aproveitável.";
+      return "Todas as ocorrências deste recorte possuem captura da página.";
     case "partial":
-      return "Parte das páginas já tem evidência pronta, mas ainda faltam capturas em outras.";
+      return "Há evidências parciais, mas ainda faltam capturas da página em uma ou mais ocorrências.";
     case "failed":
       return "Ainda não existe captura útil para as páginas deste recorte.";
     case "pending":

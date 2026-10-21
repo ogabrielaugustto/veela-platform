@@ -137,7 +137,7 @@ function normalizeCnpj(value: string | null | undefined) {
   return (value ?? "").replace(/\D/g, "");
 }
 
-function formatCpf(value: string) {
+export function formatCpf(value: string) {
   const digits = normalizeCpf(value);
   return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
 }

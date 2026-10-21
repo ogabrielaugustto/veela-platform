@@ -1,3 +1,4 @@
+import { getPageEvidenceCoverage, hasCapturedScreenshot } from "@/lib/evidence-coverage";
 import "server-only";
 
 import { notFound } from "next/navigation";
@@ -237,31 +238,6 @@ function mapEvidence(
     finalUrl: getEvidenceFinalUrl(evidence.metadata),
     siteSnapshot: getSiteSnapshot(evidence.metadata),
   };
-}
-
-function getPageEvidenceCoverage(placements: DetectionIncidentPageGroup["placements"]) {
-  const total = placements.length;
-  const capturedCount = placements.filter(
-    (placement) => placement.latestEvidence?.captureStatus === "captured",
-  ).length;
-  const hasPending = placements.some((placement) => {
-    const status = placement.latestEvidence?.captureStatus;
-    return !status || status === "pending" || status === "processing";
-  });
-
-  if (capturedCount === total) {
-    return "captured" as const;
-  }
-
-  if (capturedCount > 0) {
-    return "partial" as const;
-  }
-
-  if (hasPending) {
-    return "pending" as const;
-  }
-
-  return "failed" as const;
 }
 
 function getIncidentEvidenceCoverage(pages: DetectionIncidentPageGroup[]) {
@@ -534,7 +510,7 @@ function buildIncidents(
             lastSeenAt: pageRepresentative.placement.lastSeenAt,
             placementsCount: placementsForPage.length,
             capturedEvidenceCount: placementsForPage.filter(
-              (placement) => placement.latestEvidence?.captureStatus === "captured",
+              (placement) => hasCapturedScreenshot(placement.latestEvidence),
             ).length,
             evidenceCoverage: getPageEvidenceCoverage(placementsForPage),
             representativeDetectionId: pageRepresentative.placement.id,
@@ -546,7 +522,7 @@ function buildIncidents(
       const incidentStatus = resolveIncidentStatus(sorted.map((item) => item.placement.status));
       const placementsCount = sorted.length;
       const capturedEvidenceCount = sorted.filter(
-        (item) => item.placement.latestEvidence?.captureStatus === "captured",
+        (item) => hasCapturedScreenshot(item.placement.latestEvidence),
       ).length;
 
       return {

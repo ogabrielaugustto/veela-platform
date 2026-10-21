@@ -440,7 +440,7 @@ export async function applyClicksignCaseSraWebhook(payload: unknown) {
   }
 
   const eventAt = extractClicksignWebhookOccurredAt(payload) ?? new Date().toISOString();
-  const { error: updateError } = await admin
+  const { data: updatedDocument, error: updateError } = await admin
     .from("case_documents")
     .update({
       status: nextStatus,
@@ -455,10 +455,17 @@ export async function applyClicksignCaseSraWebhook(payload: unknown) {
       },
     })
     .eq("id", document.id)
-    .eq("organization_id", document.organization_id);
+    .eq("organization_id", document.organization_id)
+    .neq("status", "signed")
+    .select("id")
+    .maybeSingle();
 
   if (updateError) {
     throw new Error("Nao foi possivel atualizar o SRA pelo webhook Clicksign.");
+  }
+
+  if (!updatedDocument) {
+    return { matched: true, updated: false, status: document.status };
   }
 
   if (nextStatus === "signed") {
@@ -466,10 +473,22 @@ export async function applyClicksignCaseSraWebhook(payload: unknown) {
       .from("case_settlements")
       .update({ status: "sra_signed", sra_document_id: document.id })
       .eq("organization_id", document.organization_id)
-      .eq("case_public_id", document.case_public_id);
+      .eq("case_public_id", document.case_public_id)
+      .eq("status", "sra_signature_pending");
 
     if (settlementResult.error) {
       throw new Error("O SRA foi assinado, mas o acordo do caso nao foi atualizado.");
+    }
+
+    const workflowResult = await admin
+      .from("case_workflows")
+      .update({ stage: "payment", next_action: "Aguardar pagamento do acordo" })
+      .eq("organization_id", document.organization_id)
+      .eq("id", document.workflow_id)
+      .eq("stage", "agreement_signature");
+
+    if (workflowResult.error) {
+      throw new Error("O SRA foi assinado, mas a etapa do caso nao foi atualizada.");
     }
 
     if (document.status !== "signed") {

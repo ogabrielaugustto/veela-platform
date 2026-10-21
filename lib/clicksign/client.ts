@@ -1,6 +1,7 @@
 import "server-only";
 
 import { z } from "zod";
+import { formatCpf } from "@/lib/clicksign/representation-documents";
 import type {
   SoaTemplateData,
   SraSigner,
@@ -287,7 +288,7 @@ async function createSigner(params: {
           name: params.signer.name,
           email: params.signer.email,
           has_documentation: true,
-          documentation: params.signer.cpf,
+          documentation: formatCpf(params.signer.cpf),
           refusable: false,
           group: 1,
           communicate_events: {
