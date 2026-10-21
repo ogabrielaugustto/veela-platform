@@ -252,7 +252,7 @@ export function AdminAssetsGallery({ rows }: AdminAssetsGalleryProps) {
         </div>
       </aside>
 
-      <div className="rounded-xl border border-border bg-card">
+      <div className="min-w-0 rounded-xl border border-border bg-card">
         <div className="border-b border-border px-4 py-4 md:px-5">
           <div className="flex flex-col gap-4">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -375,11 +375,11 @@ export function AdminAssetsGallery({ rows }: AdminAssetsGalleryProps) {
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+                <div className="grid gap-4 sm:grid-cols-[repeat(auto-fit,minmax(min(100%,20rem),1fr))]">
                   {group.items.map((asset) => (
                     <article
                       key={asset.id}
-                      className="flex h-full flex-col rounded-xl border border-border bg-card/70 "
+                      className="flex min-w-0 h-full flex-col rounded-xl border border-border bg-card/70 "
                     >
                       <div className="aspect-[4/3] overflow-hidden rounded-t-xl border-b border-border bg-muted/30">
                         {asset.primaryFile?.publicUrl ? (
@@ -405,12 +405,12 @@ export function AdminAssetsGallery({ rows }: AdminAssetsGalleryProps) {
                             </Badge>
                           </div>
                           <h3 className="mt-3 font-medium text-foreground">{asset.title}</h3>
-                          <p className="mt-1 text-sm text-muted-foreground">
+                          <p className="mt-1 break-all text-sm text-muted-foreground">
                             {asset.primaryFile?.originalFileName ?? "Sem nome de arquivo"}
                           </p>
                         </div>
 
-                        <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
                           <InfoBlock
                             label="Monitoramento"
                             value={
@@ -433,7 +433,7 @@ export function AdminAssetsGallery({ rows }: AdminAssetsGalleryProps) {
                           />
                         </div>
 
-                        <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm text-muted-foreground">
+                        <div className="rounded-lg border border-border bg-muted/20 p-3 text-sm break-words text-muted-foreground">
                           {asset.statusSummary.description}
                         </div>
 

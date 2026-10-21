@@ -394,7 +394,7 @@ export function AdminDetectionsTable({ rows }: AdminDetectionsTableProps) {
           </div>
         </aside>
 
-        <div className="rounded-xl border border-border bg-card shadow-sm">
+        <div className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
           <div className="border-b border-border px-4 py-4 md:px-5">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -418,41 +418,6 @@ export function AdminDetectionsTable({ rows }: AdminDetectionsTableProps) {
                     <FilterXIcon className="size-4" />
                     Limpar
                   </Button>
-                </div>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                <LabeledInput
-                  label="ID da imagem"
-                  value={filters.imageId}
-                  onChange={(value) => updateFilter("imageId", value)}
-                  placeholder="Ex.: 000123"
-                />
-                <LabeledInput
-                  label="ID da ocorrencia"
-                  value={filters.occurrenceId}
-                  onChange={(value) => updateFilter("occurrenceId", value)}
-                  placeholder="Ex.: 000456"
-                />
-                <LabeledInput
-                  label="ID do caso"
-                  value={filters.caseId}
-                  onChange={(value) => updateFilter("caseId", value)}
-                  placeholder="Ex.: 000789"
-                />
-                <div className="space-y-2">
-                  <label className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                    Cliente
-                  </label>
-                  <div className="relative">
-                    <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-                    <Input
-                      value={filters.client}
-                      onChange={(event) => updateFilter("client", event.target.value)}
-                      placeholder="Nome, documento ou e-mail"
-                      className="pl-9"
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -491,6 +456,46 @@ export function AdminDetectionsTable({ rows }: AdminDetectionsTableProps) {
                   ]}
                 />
               </div>
+              <details>
+                <summary className="cursor-pointer text-sm font-medium text-primary hover:underline">Mais filtros {([filters.imageId, filters.occurrenceId, filters.caseId, filters.client].some(Boolean)) ? "(ativos)" : null}</summary>
+                <div className="pt-4">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+                <LabeledInput
+                  label="ID da imagem"
+                  value={filters.imageId}
+                  onChange={(value) => updateFilter("imageId", value)}
+                  placeholder="Ex.: 000123"
+                />
+                <LabeledInput
+                  label="ID da ocorrencia"
+                  value={filters.occurrenceId}
+                  onChange={(value) => updateFilter("occurrenceId", value)}
+                  placeholder="Ex.: 000456"
+                />
+                <LabeledInput
+                  label="ID do caso"
+                  value={filters.caseId}
+                  onChange={(value) => updateFilter("caseId", value)}
+                  placeholder="Ex.: 000789"
+                />
+                <div className="space-y-2">
+                  <label className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                    Cliente
+                  </label>
+                  <div className="relative">
+                    <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={filters.client}
+                      onChange={(event) => updateFilter("client", event.target.value)}
+                      placeholder="Nome, documento ou e-mail"
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+              </div>
+
+                </div>
+              </details>
             </div>
           </div>
 
@@ -521,7 +526,8 @@ export function AdminDetectionsTable({ rows }: AdminDetectionsTableProps) {
                     <Badge variant="outline">{group.items.length} ocorrencia(s) nesta pagina</Badge>
                   </div>
 
-                  <div className="overflow-hidden rounded-lg border border-border">
+                  <div className="overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Tabela de resultados, role horizontalmente para ver as ações">
+                    <div className="xl:min-w-[1100px]">
                     <div className="hidden grid-cols-[minmax(150px,1fr)_minmax(140px,0.85fr)_minmax(280px,1.4fr)_140px_120px_160px] gap-3 border-b border-border bg-muted/40 px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground xl:grid">
                       <span>Ocorrencia / caso</span>
                       <span>Imagem</span>
@@ -602,6 +608,7 @@ export function AdminDetectionsTable({ rows }: AdminDetectionsTableProps) {
                           </div>
                         </article>
                       ))}
+                    </div>
                     </div>
                   </div>
                 </section>

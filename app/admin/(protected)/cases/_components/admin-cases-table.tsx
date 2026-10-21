@@ -703,7 +703,7 @@ export function AdminCasesTable({ rows }: AdminCasesTableProps) {
           </div>
         </aside>
 
-        <div className="rounded-xl border border-border bg-card shadow-sm">
+        <div className="min-w-0 rounded-xl border border-border bg-card shadow-sm">
           <div className="border-b border-border px-4 py-4 md:px-5">
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -728,39 +728,6 @@ export function AdminCasesTable({ rows }: AdminCasesTableProps) {
                     Limpar
                   </Button>
                 </div>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
-                <FilterInput
-                  label="ID da imagem"
-                  value={filters.imageId}
-                  onChange={(value) => updateFilter("imageId", value)}
-                  placeholder="Ex.: 000123"
-                />
-                <FilterInput
-                  label="ID do caso"
-                  value={filters.caseId}
-                  onChange={(value) => updateFilter("caseId", value)}
-                  placeholder="Ex.: 000456"
-                />
-                <FilterInput
-                  label="ID da ocorrencia"
-                  value={filters.occurrenceId}
-                  onChange={(value) => updateFilter("occurrenceId", value)}
-                  placeholder="Ex.: 000789"
-                />
-                <FilterInput
-                  label="Cliente / nome"
-                  value={filters.clientName}
-                  onChange={(value) => updateFilter("clientName", value)}
-                  placeholder="Empresa, responsavel, marca..."
-                />
-                <FilterInput
-                  label="E-mail"
-                  value={filters.clientEmail}
-                  onChange={(value) => updateFilter("clientEmail", value)}
-                  placeholder="cliente@empresa.com"
-                />
               </div>
 
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
@@ -816,6 +783,42 @@ export function AdminCasesTable({ rows }: AdminCasesTableProps) {
                 />
               </div>
 
+              <details className="space-y-4">
+                <summary className="cursor-pointer text-sm font-medium text-primary hover:underline">Mais filtros {([filters.imageId, filters.caseId, filters.occurrenceId, filters.clientName, filters.clientEmail, filters.nextAction].some(Boolean) || [filters.workflowStage, filters.documentReadiness, filters.priority].some((value) => value !== "all")) ? "(ativos)" : null}</summary>
+                <div className="space-y-4 pt-4">
+              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+                <FilterInput
+                  label="ID da imagem"
+                  value={filters.imageId}
+                  onChange={(value) => updateFilter("imageId", value)}
+                  placeholder="Ex.: 000123"
+                />
+                <FilterInput
+                  label="ID do caso"
+                  value={filters.caseId}
+                  onChange={(value) => updateFilter("caseId", value)}
+                  placeholder="Ex.: 000456"
+                />
+                <FilterInput
+                  label="ID da ocorrencia"
+                  value={filters.occurrenceId}
+                  onChange={(value) => updateFilter("occurrenceId", value)}
+                  placeholder="Ex.: 000789"
+                />
+                <FilterInput
+                  label="Cliente / nome"
+                  value={filters.clientName}
+                  onChange={(value) => updateFilter("clientName", value)}
+                  placeholder="Empresa, responsavel, marca..."
+                />
+                <FilterInput
+                  label="E-mail"
+                  value={filters.clientEmail}
+                  onChange={(value) => updateFilter("clientEmail", value)}
+                  placeholder="cliente@empresa.com"
+                />
+              </div>
+
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
                 <FilterSelect
                   label="Etapa"
@@ -867,6 +870,8 @@ export function AdminCasesTable({ rows }: AdminCasesTableProps) {
                   />
                 </div>
               </div>
+                </div>
+              </details>
             </div>
           </div>
 
@@ -896,7 +901,8 @@ export function AdminCasesTable({ rows }: AdminCasesTableProps) {
                     <Badge variant="outline">{group.items.length} caso(s) nesta pagina</Badge>
                   </div>
 
-                  <div className="overflow-hidden rounded-lg border border-border">
+                  <div className="overflow-x-auto rounded-lg border border-border" tabIndex={0} role="region" aria-label="Tabela de resultados, role horizontalmente para ver as ações">
+                    <div className="xl:min-w-[1100px]">
                     <div className="hidden grid-cols-[minmax(160px,1fr)_minmax(150px,0.95fr)_minmax(280px,1.4fr)_140px_130px_160px] gap-3 border-b border-border bg-muted/40 px-4 py-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground xl:grid">
                       <span>Caso / imagem</span>
                       <span>Cliente</span>
@@ -987,6 +993,7 @@ export function AdminCasesTable({ rows }: AdminCasesTableProps) {
                           </div>
                         </article>
                       ))}
+                    </div>
                     </div>
                   </div>
                 </section>

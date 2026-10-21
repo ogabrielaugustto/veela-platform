@@ -371,6 +371,9 @@ export function AdminScansTable({ rows }: AdminScansTableProps) {
             </div>
           </div>
 
+          <details>
+            <summary className="cursor-pointer text-sm font-medium text-primary hover:underline">Mais filtros {(runStatusFilter !== "all") ? "(ativos)" : null}</summary>
+            <div className="pt-4">
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
             <div className="space-y-2 xl:col-span-2">
               <label className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
@@ -408,11 +411,13 @@ export function AdminScansTable({ rows }: AdminScansTableProps) {
               </Button>
             </div>
           </div>
+            </div>
+          </details>
         </div>
       </div>
 
       <div className="overflow-x-auto">
-        <Table className="table-fixed">
+        <Table className="min-w-[850px] table-fixed">
           <TableHeader className="bg-muted/40">
             <TableRow>
               <TableHead className="w-[18%]">ID</TableHead>
